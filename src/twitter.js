@@ -7,10 +7,15 @@ const fs = require("fs")
 const fsp = fs.promises
 const { escapeAttribute } = require("entities/lib/escape.js")
 
-const ELEVENTY_VIDEO_OPTIONS = {
-	duration: "*"
-}
 
+function isValidHttpUrl(string) {
+	let url
+	try {
+		url = new URL(string)
+	} catch (_) {
+		return false
+	}
+}
 const ELEVENTY_IMG_OPTIONS = {
 	widths: [null],
 	formats: ["jpeg"],
@@ -115,7 +120,7 @@ class Twitter {
 	}
 
 	async saveVideo(remoteVideoUrl, localVideoPath) {
-		let videoBuffer = await eleventyFetch(remoteVideoUrl, ELEVENTY_VIDEO_OPTIONS)
+		let videoBuffer = await eleventyFetch(remoteVideoUrl)
 
 		if (!fs.existsSync(localVideoPath)) {
 			await fsp.writeFile(localVideoPath, videoBuffer)
@@ -246,16 +251,23 @@ class Twitter {
 		// source ? `<span class="tag tag-naked tag-lite">${source}</span>` : ""
 	}*/
 
+	async replaceQuotingTweetByQuotedTweet(replyTweet) {
+		const quoted_tweet_ID = replyTweet.entities.url[0].expanded_url.match(/Saint_loup\/status\/(\d*$)/)[1]
+		return (await dataSource.getRepliesToId(quoted_tweet_ID)) || []
+	}
+
 	async getReplies(tweet, direction = "next") {
 		if (direction === "next") {
 			return (await dataSource.getRepliesToId(tweet.id_str)) || []
 		} else {
 			let replyTweet = await dataSource.getTweetById(tweet && tweet.in_reply_to_status_id_str)
+			if (isValidHttpUrl(replyTweet.full_text)) {
+				replyTweet = this.replaceQuotingTweetByQuotedTweet(replyTweet)
+			}
+
 			return replyTweet ? [replyTweet] : []
 		}
 	}
-
-
 
 	async getReplyHtml(tweet, direction = "next", tweetOptions = {}) {
 		let replies = await this.getReplies(tweet, direction)
