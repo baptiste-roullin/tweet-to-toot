@@ -26,29 +26,10 @@ const ELEVENTY_IMG_OPTIONS = {
 
 
 class Twitter {
-	isOriginalPost(tweet) {
-		return !this.isRetweet(tweet) && !this.isMention(tweet) && !this.isReply(tweet)
-	}
 
 	isReply(tweet) {
 		return !!tweet.in_reply_to_status_id
 	}
-
-	isSearchMatch(tweet, needle, caseSensitive, before) {
-		let haystack = (tweet.full_text || "")
-
-		// transform text before search
-		if (before && typeof before === "function") {
-			haystack = before(haystack)
-		}
-
-		let needles = needle
-		if (!Array.isArray(needle)) {
-			needles = [needle]
-		}
-		return needles.filter(needle => !!haystack.match(new RegExp("\\b" + needle + "\\b", "g" + (!caseSensitive ? "i" : "")))).length > 0
-	}
-
 
 	getLinkUrls(tweet) {
 		let links = []
@@ -85,14 +66,6 @@ class Twitter {
 			// alternate version of manual old school retweet
 			tweet.full_text.startsWith("RT: ")
 		)
-	}
-
-	_isMentionCheck(tweet) {
-		return !this.isReply(tweet) && tweet.full_text.trim().startsWith("@") && !tweet.full_text.trim().startsWith("@font-face ")
-	}
-
-	isMention(tweet) {
-		return this._isMentionCheck(tweet)
 	}
 
 
@@ -236,41 +209,7 @@ class Twitter {
 		}
 	}
 
-	async renderFullText(tweet) {
-		let text = tweet.full_text
 
-		// Markdown
-		// replace `*` with <code>*</code>
-		text = text.replace(/\`([^\`]*)\`/g, "<code>$1</code>")
-
-		let { medias, textReplacements } = await this.getMedia(tweet)
-
-		for (let [key, { regex, html }] of textReplacements) {
-			text = text.replace(regex || key, html)
-		}
-
-		if (medias.length) {
-			text += `<is-land on:visible><div class="tweet-medias">${medias.join("")}</div></is-land>`
-		}
-
-		return text
-	}
-
-	cleanupSource(text) {
-		text = text.replace("Twitter for", "via")
-		text = text.replace("Twitter Web App", "")
-		text = text.replace("Twitter Web Client", "")
-		return text.trim()
-	}
-
-	renderDate(d) {
-		let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-		return `${d.getFullYear()} ${months[d.getMonth()]} ${d.getDate()}`
-	}
-
-	renderPercentage(count, total) {
-		return `${(count * 100 / total).toFixed(1)}%`
-	}
 
 	/*async renderTweet(tweet, options = {}) {
 		if( !tweet ) {
