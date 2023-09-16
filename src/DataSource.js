@@ -1,5 +1,5 @@
 const sqlite3 = require("sqlite3").verbose()
-const db = new sqlite3.Database("../database/tweet.db")
+const db = new sqlite3.Database("./database/tweet.db")
 
 class DataSource {
 	constructor() {

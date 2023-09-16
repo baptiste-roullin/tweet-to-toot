@@ -4,12 +4,8 @@
   "private": true,
   "description": "Take ownership of your Twitter data and host your own Twitter archive.",
   "scripts": {
-    "clean": "rm -rf .cache",
     "import": "node database/import-from-archive.js",
-    "import-without-circles": "npm run import -- removecircletweets",
-    "fetch-new-data": "node database/fetchFromApi.js",
-    "build": "npx @11ty/eleventy --quiet",
-    "start": "npx @11ty/eleventy --quiet --serve"
+    "export-to-JSON": "node ./src/index.js 1270426433337376768,1270426433337376768"
   },
   "keywords": [],
   "contributors": [
@@ -19,16 +15,14 @@
   "devDependencies": {
     "@11ty/eleventy-fetch": "^3.0.0",
     "@tweetback/canonical": "^2.0.20",
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.3.1",
     "entities": "^4.4.0",
-    "lodash": "^4.17.21",
-    "numeral": "^2.0.6",
-    "pagefind": "^0.10.6",
     "parse-domain": "^5.0.0",
-    "sqlite3": "^5.1.4",
-    "twitter-lite": "^1.1.0"
+    "sqlite3": "^5.1.4"
   },
   "dependencies": {
-    "@11ty/is-land": "^3.0.0"
+    "@11ty/eleventy-img": "^3.1.0",
+    "@11ty/is-land": "^3.0.0",
+    "masto": "^6.2.0"
   }
 }
