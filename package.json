@@ -1,6 +1,6 @@
 {
-  "name": "@tweetback/tweetback",
-  "version": "1.0.0",
+  "name": "TweetToToot",
+  "version": "0.1.0",
   "private": true,
   "description": "Take ownership of your Twitter data and host your own Twitter archive.",
   "scripts": {
@@ -8,9 +8,6 @@
     "export-to-JSON": "node ./src/index.js 1270426433337376768,1270426433337376768"
   },
   "keywords": [],
-  "contributors": [
-    "Zach Leatherman <zachleatherman@gmail.com> (https://zachleat.com/)"
-  ],
   "license": "MIT",
   "devDependencies": {
     "@11ty/eleventy-fetch": "^3.0.0",

@@ -7,12 +7,12 @@ const masto = Masto.createRestAPIClient({
 	url: process.env.URL,
 	accessToken: process.env.TOKEN,
 })
-async function publishToot(statusText, localImages, inReplyToId = null) {
+async function publishToot(tweet, inReplyToId = null) {
 
 
-	if (localImages) {
+	if (tweet.localImages) {
 		const attachments = await Promise.all(
-			localImages.map(async image => {
+			tweet.localImages.map(async image => {
 				return masto.v2.media.create({
 					file: new Blob([fs.readFileSync("../img/" + image.path)]),
 					description: image.alt,
@@ -27,9 +27,9 @@ async function publishToot(statusText, localImages, inReplyToId = null) {
 	if (tweet.inReplyToId) {
 		const status = await masto.v1.statuses.create({
 			mediaIds: attachmentIDs,
-			status: statusText,
+			status: tweet.full_text, // renderFullText() ?
 			visibility: "public",
-			inReplyToId: inReplyToId
+			inReplyToId: inReplyToId || null
 		})
 		publishToot(tweet)
 	}
