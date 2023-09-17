@@ -26,7 +26,6 @@ class DataSource {
 		if (!id) {
 			return null
 		}
-		// TODO get this from cache?
 
 		return new Promise((resolve, reject) => {
 			db.get("SELECT * FROM tweets WHERE id_str = ?", { 1: id }, (err, row) => {

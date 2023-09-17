@@ -2,11 +2,10 @@ const { parseDomain } = require("parse-domain")
 const dataSource = require("./DataSource")
 const eleventyImg = require("@11ty/eleventy-img")
 const eleventyFetch = require("@11ty/eleventy-fetch")
-const fs = require("fs")
-const fsp = fs.promises
-const { escapeAttribute } = require("entities/lib/escape.js")
+import fs from "fs"
+import fsp from "fs/promises"
 
-const userName = 'saint_loup'
+let userName = ""
 
 
 const ELEVENTY_IMG_OPTIONS = {
@@ -24,7 +23,7 @@ const ELEVENTY_IMG_OPTIONS = {
 
 
 
-class Twitter {
+export default class Twitter {
 
 	isValidHttpUrl(string) {
 		let url
@@ -71,6 +70,26 @@ class Twitter {
 		)
 	}
 
+	async renderFullText(tweet) {
+		let text = tweet.full_text
+
+		// Markdown
+		// replace `*` with <code>*</code>
+		text = text.replace(/\`([^\`]*)\`/g, "<code>$1</code>")
+
+		let { medias, textReplacements } = await this.getMedia(tweet)
+
+		for (let [key, { regex, html }] of textReplacements) {
+			text = text.replace(regex || key, html)
+		}
+
+		if (medias.length) {
+			text += `<is-land on:visible><div class="tweet-medias">${medias.join("")}</div></is-land>`
+		}
+
+		return text
+	}
+
 
 	getUrlObject(url) {
 		let expandedUrl = url.expanded_url ?? url.url
@@ -111,7 +130,6 @@ class Twitter {
 	}
 
 	async getImage(remoteImageUrl, alt) {
-		// TODO the await use here on eleventyImg could be improved
 		let stats = await eleventyImg(remoteImageUrl, ELEVENTY_IMG_OPTIONS)
 		let path = stats.jpeg[0].url
 		return { path, alt }
@@ -184,14 +202,18 @@ class Twitter {
 			textReplacements,
 		}
 	}
-	async generateThread(tweet) {
-		let replies = await dataSource.getRepliesToId(tweet.id_str) || []
+	async generateThread(id) {
+		const firstTweet = await dataSource.getTweetById(id)
+		console.log(firstTweet)
+		console.log(`thread about ${firstTweet.full_text.slice(0, 50)}...`)
+
+		let replies = await dataSource.getRepliesToId(firstTweet.id_str) || []
 		if (!replies.length) {
 			return ""
 		}
 		let thread = []
 		for (let replyTweet of replies) {
-			let nextTweet = await this.generateThread(replyTweet,)
+			let nextTweet = await this.generateThread(replyTweet) // TODO ??
 			if (this.isValidHttpUrl(replyTweet.full_text)) {
 				replyTweet = await this.replaceQuotingTweetByQuotedTweet(replyTweet)
 			}
@@ -211,4 +233,3 @@ class Twitter {
 	}
 
 }
-module.exports = Twitter

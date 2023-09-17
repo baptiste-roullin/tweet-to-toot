@@ -1,25 +1,33 @@
 {
-  "name": "TweetToToot",
+  "name": "tweets-to-toots",
   "version": "0.1.0",
   "private": true,
-  "description": "Take ownership of your Twitter data and host your own Twitter archive.",
+  "type": "commonjs",
+  "description": "Publish your Twitter archived threads to Mastodon",
   "scripts": {
-    "import": "node database/import-from-archive.js",
-    "export-to-JSON": "node ./src/index.js 1270426433337376768,1270426433337376768"
+    "create-db": "node database/import-from-archive.js",
+    "publish": "npx ts-node ./src/index.ts --  --ids=1157670494390378498"
   },
-  "keywords": [],
+  "keywords": [
+    "Mastodon",
+    "Twitter",
+    "threads",
+    "Twitter threads"
+  ],
   "license": "MIT",
   "devDependencies": {
     "@11ty/eleventy-fetch": "^3.0.0",
-    "@tweetback/canonical": "^2.0.20",
-    "dotenv": "^16.3.1",
-    "entities": "^4.4.0",
-    "parse-domain": "^5.0.0",
-    "sqlite3": "^5.1.4"
-  },
-  "dependencies": {
     "@11ty/eleventy-img": "^3.1.0",
     "@11ty/is-land": "^3.0.0",
-    "masto": "^6.2.0"
+    "@tweetback/canonical": "^2.0.20",
+    "@types/node": "^20.6.2",
+    "dotenv": "^16.3.1",
+    "entities": "^4.4.0",
+    "masto": "^6.2.0",
+    "parse-domain": "^5.0.0",
+    "sqlite3": "^5.1.4",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2",
+    "yargs": "^17.7.2"
   }
 }
