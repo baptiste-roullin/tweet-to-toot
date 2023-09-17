@@ -1,14 +1,12 @@
-# Tweets to Toots: Publish your Twitter archived threads to Mastodon
+# Tweet-To-Toot – repost your Twitter threads to Mastodon
+
+## VERY MUCH UNFINISHED. NOT EVEN PRE-ALPHA. IT'S A SORRY MESS. WHY IS THIS EVEN PUBLIC.
 
 You want to break free of X/Twitter but do not want to lose your numerous, ongoing, carefully maintained, years-long threads?
 
 This tool is for your: grab an archive of your Twitter account, republish the threads your want on Mastodon and start anew.
 
 Under the hood is a stripped-down fork of [Tweetback](https://github.com/tweetback/tweetback) and [a client](https://github.com/neet/masto.js/) using the Mastodon API.
-
-## Setup
-
-VERY MUCH UNFINISHED. NOT EVEN ALPHA
 
 ## Setup
 
@@ -24,8 +22,6 @@ The `create-db` should be a bit long with big archives.
 
 
 ## Usage
-
-
 
 Examples :
 
