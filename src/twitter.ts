@@ -1,4 +1,3 @@
-const { parseDomain } = require("parse-domain")
 import DataSource from "./DataSource"
 const eleventyImg = require("@11ty/eleventy-img")
 const eleventyFetch = require("@11ty/eleventy-fetch")
@@ -35,43 +34,6 @@ export default class Twitter {
 			return false
 		}
 	}
-	getLinkUrls(tweet) {
-		let links = []
-
-		if (tweet.entities && tweet.entities.urls) {
-			for (let url of tweet.entities.urls) {
-				try {
-					let urlObj = new URL(url.expanded_url ?? url.url)
-					let parsedDomain = parseDomain(urlObj.host)
-					let domain
-					if (parsedDomain.topLevelDomains) {
-						const tld = parsedDomain.topLevelDomains.join(".")
-						domain = `${parsedDomain.domain}.${tld}`
-					} else {
-						domain = urlObj.host
-					}
-					links.push({
-						host: urlObj.host,
-						origin: urlObj.origin,
-						domain: domain
-					})
-				} catch (e) {
-					console.log(e)
-				}
-			}
-		}
-
-		return links
-	}
-
-	isRetweet(tweet) {
-		return tweet && (
-			tweet.full_text.startsWith("RT ") ||
-			// alternate version of manual old school retweet
-			tweet.full_text.startsWith("RT: ")
-		)
-	}
-
 
 
 	async getImage(remoteImageUrl, alt) {

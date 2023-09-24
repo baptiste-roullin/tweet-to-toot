@@ -4,7 +4,7 @@
 
 You want to break free of the site formerly known as Twitter but do not want to lose your numerous, ongoing, carefully maintained, years-long threads?
 
-This tool is for your: grab an archive of your Twitter account, republish the threads your want on Mastodon and start anew.
+This tool is for your: [grab an archive](https://twitter.com/settings/download_your_data) of your Twitter account, republish the threads your want on Mastodon and start anew.
 
 Under the hood is a stripped-down fork of [Tweetback](https://github.com/tweetback/tweetback) and [a client](https://github.com/neet/masto.js/) using the Mastodon API.
 
