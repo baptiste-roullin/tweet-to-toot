@@ -100,14 +100,14 @@ export default class Twitter {
 				if (url.expanded_url && url.expanded_url.indexOf(`/${tweet.id}/photo/`) > -1) {
 					textReplacements.set(url.url, { newString: "" })
 				} else {
-					textReplacements.set(url.url, { newString: url })
+					textReplacements.set(url.url, { newString: url['expanded_url'] })
 				}
 			}
 
 			for (let mention of tweet.entities.user_mentions) {
 				textReplacements.set(mention.screen_name, {
 					regex: new RegExp(`@${mention.screen_name}`, "i"),
-					newString: ` https://twitter.com/${mention.screen_name}`,
+					newString: `https://twitter.com/${mention.screen_name}`,
 				})
 			}
 		}
