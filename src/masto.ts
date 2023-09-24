@@ -57,7 +57,7 @@ export async function publishMastoThread(thread) {
 			status: params.intro,
 			visibility: "public",
 		})
-		var nextID = status.inReplyToId
+		var nextID = status.id
 		var publishedURL
 	}
 	else {
@@ -70,7 +70,6 @@ export async function publishMastoThread(thread) {
 		const { id, uri } = await publishToot(tweet, nextID)
 		nextID = id
 		publishedURL = uri
-		console.log(params.wait)
 		await timers.scheduler.wait(params.wait * 1000)
 
 	}
