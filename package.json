@@ -6,7 +6,7 @@
   "description": "Publish your Twitter archived threads to Mastodon",
   "scripts": {
     "create-db": "node database/import-from-archive.js",
-    "publish": "npx ts-node ./src/index.ts --  --ids=1157670494390378498"
+    "publish": "npx ts-node ./src/index.ts "
   },
   "keywords": [
     "Mastodon",
@@ -21,6 +21,7 @@
     "@11ty/is-land": "^3.0.0",
     "@tweetback/canonical": "^2.0.20",
     "@types/node": "^20.6.2",
+    "@types/yargs": "^17.0.24",
     "dotenv": "^16.3.1",
     "entities": "^4.4.0",
     "masto": "^6.2.0",
@@ -29,5 +30,8 @@
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2",
     "yargs": "^17.7.2"
+  },
+  "dependencies": {
+    "@types/sqlite3": "^3.1.8"
   }
 }

@@ -1,14 +1,24 @@
-const sqlite3 = require("sqlite3").verbose()
+import * as sqlite from 'sqlite3'
+import { Tweet } from './types'
+const sqlite3 = sqlite.verbose()
 const db = new sqlite3.Database("./database/tweet.db")
 
-class DataSource {
+
+
+export default class DataSource {
+
 	constructor() {
 		this.cache = {
-			replies: {}
+			replies: {},
+
 		}
 	}
 
-	async getRepliesToId(id) {
+	cache: Record<string, any>
+	cachedGetAllPromise: Promise<Tweet[]>
+
+
+	async getRepliesToId(id): Promise<Tweet[]> {
 		if (!id) {
 			return []
 		}
@@ -22,7 +32,7 @@ class DataSource {
 		return this.cache.replies[id] ? Array.from(this.cache.replies[id]) : []
 	}
 
-	async getTweetById(id) {
+	async getTweetById(id): Promise<Tweet | null> {
 		if (!id) {
 			return null
 		}
@@ -39,30 +49,33 @@ class DataSource {
 	}
 
 	// takes a db row, returns the tweet json
-	normalizeTweetObject(tweet) {
+	normalizeTweetObject(tweet): Tweet {
 		let json = JSON.parse(tweet.json)
 		if (tweet.api_version === "2") {
-			let replies = (json.referenced_tweets || []).filter(entry => entry.type === "replied_to")
+
+			let replies: Record<string, any>[] = (json.referenced_tweets || []).filter(entry => entry.type === "replied_to")
 			let replyTweetId = replies.length ? replies[0].id : null
 
-			let obj = {}
-			obj.date = new Date(Date.parse(json.created_at))
-			obj.id = json.id
-			obj.id_str = json.id
-			// should always be a string
-			obj.full_text = json.text || ""
-			obj.truncated = false
-			obj.retweet_count = json.public_metrics.retweet_count
-			obj.favorite_count = json.public_metrics.like_count
-			obj.quote_count = json.public_metrics.quote_count
-			obj.reply_count = json.public_metrics.reply_count
-			obj.in_reply_to_status_id = replyTweetId
-			obj.in_reply_to_status_id_str = replyTweetId
-			obj.in_reply_to_user_id = json.in_reply_to_user_id
-			obj.in_reply_to_user_id_str = json.in_reply_to_user_id
-			obj.in_reply_to_screen_name = tweet.in_reply_to_screen_name // use the db row instead of the json
-			obj.entities = json.entities || {}
-
+			let obj = {
+				date: new Date(Date.parse(json.created_at)),
+				id: json.id,
+				id_str: json.id,
+				// should always be a string
+				full_text: json.text || "",
+				lang: json.lang || "",
+				truncated: false,
+				retweet_count: json.public_metrics.retweet_count,
+				favorite_count: json.public_metrics.like_count,
+				quote_count: json.public_metrics.quote_count,
+				reply_count: json.public_metrics.reply_count,
+				in_reply_to_status_id: replyTweetId,
+				in_reply_to_status_id_str: replyTweetId,
+				in_reply_to_user_id: json.in_reply_to_user_id,
+				in_reply_to_user_id_str: json.in_reply_to_user_id,
+				in_reply_to_screen_name: tweet.in_reply_to_screen_name, // use the db row instead of the json,
+				entities: json.entities || {},
+				extended_entities: {}
+			}
 			if (json.entities && json.entities.urls) {
 				obj.entities.urls = json.entities.urls
 			} else {
@@ -108,7 +121,7 @@ class DataSource {
 					reject(err)
 				} else {
 					let ret = rows.filter(row => {
-						if (row.hidden) {
+						if (row['hidden']) {
 							return false
 						}
 						return true
@@ -132,4 +145,3 @@ class DataSource {
 	}
 }
 
-module.exports = new DataSource()

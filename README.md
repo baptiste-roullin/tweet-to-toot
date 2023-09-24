@@ -25,7 +25,7 @@ The `create-db` should be a bit long with big archives.
 
 Examples :
 
-- `npm run publish -- --ids=1157670494390378498 --intro="imported thread, started in 2019 on the Other Site" --mergeQuote=no`
+- `npm run publish -- --ids=1157670494390378498 --intro="imported thread, started in 2019 on the Other Site" --mergeQuote`
 
 - `npm run publish -- --ids=1157670494390378498,1157670494390378498`
 
@@ -36,7 +36,7 @@ Examples :
 
 `--intro`: Short text in quotes. Optional. Append dedicated post at the beginning of your Mastodon Thread
 
-`--mergeQuote`: yes or no. Default : no. Defines behavior for quoted tweets of yourself. If false, it will keep the quote as a link to Twitter.com. If true, it will merge the content of the quote with the post.
+`--mergeQuote`:  Default : no. Defines behavior for quoted tweets of yourself. If false, it will keep the quote as a link to Twitter.com. If true, it will merge the content of the quote with the post.
 
 `--concatWith`: Mastodon post id. Optional. If provided, the thread will be posted as a continuation of this post. Useful if you want merge threads.
 
