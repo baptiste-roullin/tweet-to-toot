@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "commonjs",
-  "description": "Publish your Twitter archived threads to Mastodon",
+  "description": "Export your Twitter archived threads to Mastodon",
   "scripts": {
     "create-db": "node database/import-from-archive.js",
     "publish": "npx ts-node ./src/index.ts "

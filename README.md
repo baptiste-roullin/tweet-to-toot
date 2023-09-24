@@ -1,4 +1,4 @@
-# Tweet To Toot – repost your Twitter threads to Mastodon
+# Tweet To Toot – export your Twitter threads to Mastodon
 
 ## VERY MUCH UNFINISHED. THERE SHOULD BE A GREEK LETTER BEFORE ALPHA. IT'S A SORRY MESS. WHY IS THIS EVEN PUBLIC.
 
