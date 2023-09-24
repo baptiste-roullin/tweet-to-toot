@@ -1,92 +1,47 @@
 
 import { publishMastoThread } from './masto'
-import yargs from 'yargs'
-import { hideBin } from 'yargs/helpers'
-
-yargs(hideBin(process.argv))
-
-
+import { parseParams } from './parseParams'
 import Twitter from './twitter'
 import { err } from './utils'
-import { Params } from './types.d'
 
+
+//TODO : alert si le thread répond à un autre compte.
+//TODO : mode dry run
+
+
+export const params = parseParams();
 
 
 (async function () {
 
 
-
-	async function parseParams() {
-		const params = await yargs(hideBin(process.argv))
-			.options({
-				'ids': {
-					alias: 'id',
-					describe: 'list of comma-separated ids',
-					demandOption: true,
-					msg: 'You must provide or several ID, in the form --id=number,number',
-					type: 'array'
-				},
-				'wait': { //TODO implémenter
-					describe: '',
-					demandOption: false,
-					type: 'number',
-					default: 500
-				},
-				'concatWith': { //TODO implémenter
-					describe: '',
-					demandOption: false,
-					type: 'boolean',
-					default: false
-				},
-				'mergeQuote': { //TODO implémenter
-					describe: '',
-					demandOption: false,
-					type: 'boolean',
-					default: false
-				},
-				'intro': { //TODO implémenter
-					describe: '',
-					demandOption: false,
-					type: 'string',
-				}
-			})
-			.parse()
-
-
-
-		params.ids.forEach(id => {
-			if (isNaN(Number(id))) {
-				err(`${id}: this string does not seem to be a proper id`)
-			}
-		})
-		console.log(`Publishing ${params.ids.length} threads`)
-
-		return params
-
-	}
-
-	async function generateThread(id: string, params) {
+	async function generateThread(id: string) {
 		const twitter = new Twitter()
-		const twitterThread = await twitter.startThread(id, params)
+		const twitterThread = await twitter.startThread(id)
 
-		//await twitter.startThread("1471882481251069953")
-
-		await publishMastoThread(twitterThread, params)
+		if (params['dry-run']) {
+			twitterThread.forEach(el => {
+				console.log(`
+${el.date}
+${el.full_text}
+====================`)
+			})
+		}
+		else { await publishMastoThread(twitterThread) }
 	}
 
-
-	const params = await parseParams()
 	const ids = params.ids as string[]
 
 	if (ids.length > 1) {
-		await Promise.all(ids.map(id => generateThread(id, params)))
-		//await fsp.writeFile('threads.json', JSON.stringify(threads))
+		if (params.intro) {
+			err("The intro parameter can be used when you provide only sone thread ID ")
+		}
+		await Promise.all(ids.map(id => generateThread(id)))
+
 	}
 	else {
-		if (params.intro) {
-			err("The intro parameter can only be used when you provide one thread ID ")
-		}
-		await generateThread(ids[0], params)
+
+		await generateThread(ids[0])
 	}
 
 })()

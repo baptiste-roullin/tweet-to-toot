@@ -5,10 +5,9 @@ const eleventyFetch = require("@11ty/eleventy-fetch")
 import fs from "fs"
 import fsp from "fs/promises"
 import { Tweet } from './types'
-import { transform as twitterLink } from "@tweetback/canonical"
+import { params } from './index'
 
 
-let userName = ""
 const dataSource = new DataSource()
 
 const ELEVENTY_IMG_OPTIONS = {
@@ -73,64 +72,7 @@ export default class Twitter {
 		)
 	}
 
-	//async renderFullText(tweet) {
-	//	let text = tweet.full_text
 
-	//	// Markdown
-	//	// replace `*` with <code>*</code>
-	//	text = text.replace(/\`([^\`]*)\`/g, "<code>$1</code>")
-
-	//	let { local_media, textReplacements } = await this.getMedia(tweet)
-
-	//	for (let [key, { regex, html }] of textReplacements) {
-	//		text = text.replace(regex || key, html)
-	//	}
-
-	//	if (local_media.length) {
-	//		//	text += `<is-land on:visible><div class="tweet-medias">${medias.join("")}</div></is-land>`
-	//	}
-
-	//	return text
-	//}
-
-
-	getUrlObject(url) {
-		let expandedUrl = url.expanded_url ?? url.url
-		let displayUrl = expandedUrl
-		let className = "tweet-url"
-		let targetUrl = expandedUrl
-
-		// Links to my tweets
-		if (displayUrl.startsWith(`https://twitter.com/${userName}/status/`)) {
-			targetUrl = `/${expandedUrl.substr(`https://twitter.com/${userName}/status/`.length)}`
-		}
-
-		// Links to other tweets
-		if (displayUrl.startsWith("https://twitter.com") && displayUrl.indexOf("/status/") > -1) {
-			displayUrl = displayUrl.substring("https://twitter.com/".length)
-			displayUrl = displayUrl.replace("/status/", "/")
-			displayUrl = `@${displayUrl}`
-			// displayUrl = displayUrl.replace(/(\d+)/, function(match) {
-			// 	return "" + (match.length > 6 ? "…" : "") + match.substr(-6);
-			// });
-			className = "tweet-username"
-		} else {
-			if (displayUrl.startsWith("http://")) {
-				displayUrl = displayUrl.substring("http://".length)
-			}
-			if (displayUrl.startsWith("https://")) {
-				displayUrl = displayUrl.substring("https://".length)
-			}
-			if (displayUrl.startsWith("www.")) {
-				displayUrl = displayUrl.substring("www.".length)
-			}
-		}
-		return {
-			displayUrl,
-			className,
-			targetUrl,
-		}
-	}
 
 	async getImage(remoteImageUrl, alt) {
 		let stats = await eleventyImg(remoteImageUrl, ELEVENTY_IMG_OPTIONS)
@@ -146,16 +88,35 @@ export default class Twitter {
 		}
 	}
 
+
 	async getMedia(tweet) {
 		let local_media = []
 		let textReplacements = new Map()
 
+		// linkify urls
+		if (tweet.entities) {
+			for (let url of tweet.entities.urls) {
+				// Remove photo URLs
+				if (url.expanded_url && url.expanded_url.indexOf(`/${tweet.id}/photo/`) > -1) {
+					textReplacements.set(url.url, { newString: "" })
+				} else {
+					textReplacements.set(url.url, { newString: url })
+				}
+			}
+
+			for (let mention of tweet.entities.user_mentions) {
+				textReplacements.set(mention.screen_name, {
+					regex: new RegExp(`@${mention.screen_name}`, "i"),
+					newString: ` https://twitter.com/${mention.screen_name}`,
+				})
+			}
+		}
 
 		if (tweet.extended_entities) {
 			for (let media of tweet.extended_entities.media) {
 				if (media.type === "photo") {
 					// remove photo URL
-					textReplacements.set(media.url, { html: "" })
+					textReplacements.set(media.url, { newString: "" })
 
 					try {
 						local_media.push(await this.getImage(media.media_url_https, media.alt_text || ""))
@@ -165,8 +126,7 @@ export default class Twitter {
 					}
 				} else if (media.type === "animated_gif" || media.type === "video") {
 					if (media.video_info && media.video_info.variants) {
-						textReplacements.set(media.url, { html: "" })
-
+						textReplacements.set(media.url, { newString: "" })
 						let videoResults = media.video_info.variants.filter(video => {
 							return video.content_type === "video/mp4" && video.url
 						}).sort((a, b) => {
@@ -181,63 +141,69 @@ export default class Twitter {
 
 						try {
 							let videoUrl = remoteVideoUrl
-							let posterStats = await eleventyImg(media.media_url_https, ELEVENTY_IMG_OPTIONS)
-							if (!this.isRetweet(tweet)) {
-								videoUrl = `/video/${tweet.id}.mp4`
-
-								await this.saveVideo(remoteVideoUrl, `.${videoUrl}`)
-							}
-							let imgRef = posterStats.jpeg[0]
-							local_media.push(imgRef.url)
+							videoUrl = `video/${tweet.id}.mp4`
+							await this.saveVideo(remoteVideoUrl, `./${videoUrl}`)
+							local_media.push({ path: videoUrl })
 						} catch (e) {
 							console.log("Video request error", e.message)
-							local_media.push(`<a href="${remoteVideoUrl}">${remoteVideoUrl}</a>`)
 						}
 					}
 				}
 			}
 		}
 
-		return local_media
+		return { local_media, textReplacements }
 
 	}
 
-	async getFullTweet(tweet, params) {
-		if (params.mergeQuote) {
-			if (this.isValidHttpUrl(tweet['full_text'])) {
-				tweet = this.replaceQuotingTweetByQuotedTweet(tweet)[0] //TODO et si plusieurs QT ?
-			}
-		}			// TODO : fail
-		tweet['local_media'] = await this.getMedia(tweet)
+	async getFullTweet(tweet) {
+		let text = tweet.full_text
+
+		//if (params.mergeQuote) {
+		//	if (this.isValidHttpUrl(tweet['full_text'])) {
+		//		tweet = this.replaceQuotingTweetByQuotedTweet(tweet)[0] //TODO : FAIL. et si plusieurs QT ?
+		//	}
+		//}
+
+		let { local_media, textReplacements } = await this.getMedia(tweet)
+
+		for (let [key, { regex, newString }] of textReplacements) {
+			text = text.replace(regex || key, newString)
+		}
+
+		tweet['local_media'] = local_media
+		tweet.full_text = text
+
 		return tweet
 	}
 
-	async startThread(id, params) {
+	async startThread(id) {
 		const firstTweet = await dataSource.getTweetById(id)
+		params.userName = firstTweet.in_reply_to_screen_name
 		//console.log(firstTweet)
 		console.log(`thread about ${firstTweet.full_text.slice(0, 50)}...`)
-		return await this.generateThread(firstTweet, params)
+		return await this.generateThread(firstTweet)
 	}
 
-	async generateThread(firstTweet: Tweet, params) {
+	async generateThread(firstTweet: Tweet): Promise<Tweet[]> {
 
 		let replies = await dataSource.getRepliesToId(firstTweet.id_str) || []
 
 		let thread = []
-		thread.push(await this.getFullTweet(firstTweet, params))
+		thread.push(await this.getFullTweet(firstTweet))
 		if (!replies.length) {
 			return thread
 		}
 		for (let replyTweet of replies) {
-			let nextTweet = await this.generateThread(replyTweet, params) // TODO ??
-			const fullTweet = await this.getFullTweet(nextTweet, params)
-			thread.push(...nextTweet)
+			let nextTweet = await this.generateThread(replyTweet)
+			const fullTweet = await this.getFullTweet(nextTweet)
+			thread.push(...fullTweet)
 		}
 		return thread
 
 	}
 	async replaceQuotingTweetByQuotedTweet(replyTweet) {
-		const idMatcher = new RegExp(userName + "\/status\/(\d*$)")
+		const idMatcher = new RegExp(params.userName + "\/status\/(\d*$)")
 		const quoted_tweet_ID = replyTweet.entities.url[0].expanded_url.match(idMatcher)[1]
 		return (await dataSource.getRepliesToId(quoted_tweet_ID))
 	}

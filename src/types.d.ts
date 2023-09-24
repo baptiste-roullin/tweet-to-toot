@@ -15,7 +15,8 @@ export interface Tweet {
 	in_reply_to_screen_name: string // use the db row instead of the json
 	entities: Record<string, any>
 	extended_entities: Record<string, any>
-	lang: string,
+	lang: string
+	in_reply_to_screen_name: string
 	referenced_tweets?: []
 
 }

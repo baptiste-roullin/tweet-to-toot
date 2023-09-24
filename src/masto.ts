@@ -1,12 +1,13 @@
-require('dotenv').config()
-import fs from "node:fs"
+//TODO : object object
+
+import { config } from 'dotenv'
+config()
 import timers from 'node:timers/promises'
 import { createRestAPIClient } from "masto"
 import { err } from './utils'
-import path from "node:path"
-import { Params } from './types'
-
-//TODO : suppression d'url
+import fs from "node:fs"
+import { Blob } from 'buffer'
+import { params } from './index'
 
 if (!process.env.URL) {
 	err("You must provide an instance URL")
@@ -19,13 +20,14 @@ const masto = createRestAPIClient({
 	accessToken: process.env.TOKEN
 })
 
-async function publishToot(tweet, id = null, params) {
+async function publishToot(tweet, id = null) {
 	if (tweet.local_media) {
 		const attachments = await Promise.all(
 			tweet.local_media.map(async image => {
+				const file = fs.readFileSync(image.path)
 				return masto.v2.media.create({
-					file: new Blob([fs.readFileSync(image.path)]),
-					description: image.alt,
+					file: new Blob([file]),
+					description: image?.alt,
 				})
 			}))
 		var attachmentIDs = attachments.map(attach => attach.id) || null
@@ -48,7 +50,7 @@ async function publishToot(tweet, id = null, params) {
 
 //publishTooot("test reply",  /*[{ path: "zYIkgWeIS_.jpeg", alt: "test" }], 111077353297617849*/)
 
-export async function publishMastoThread(thread, params) {
+export async function publishMastoThread(thread) {
 
 	if (params.intro) {
 		const status = await masto.v1.statuses.create({
@@ -65,10 +67,11 @@ export async function publishMastoThread(thread, params) {
 
 	for (let tweet of thread) {
 		//appendPreface()
-		const { id, uri } = await publishToot(tweet, nextID, params)
+		const { id, uri } = await publishToot(tweet, nextID)
 		nextID = id
 		publishedURL = uri
-		await timers.scheduler.wait(params.wait) // Wait one second before continuing
+		console.log(params.wait)
+		await timers.scheduler.wait(params.wait * 1000)
 
 	}
 	console.log(`last toot published at ${publishedURL}`)
