@@ -5,12 +5,9 @@ import Twitter from './twitter'
 import { err } from './utils'
 
 
-//TODO : alert si le thread répond à un autre compte.
-//TODO : mode dry run
 
 
 export const params = parseParams();
-
 
 (async function () {
 

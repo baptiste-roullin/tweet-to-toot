@@ -23,7 +23,6 @@ const ELEVENTY_IMG_OPTIONS = {
 }
 
 
-
 export default class Twitter {
 
 	isValidHttpUrl(string) {
@@ -34,7 +33,6 @@ export default class Twitter {
 			return false
 		}
 	}
-
 
 	async getImage(remoteImageUrl, alt) {
 		let stats = await eleventyImg(remoteImageUrl, ELEVENTY_IMG_OPTIONS)
@@ -49,7 +47,6 @@ export default class Twitter {
 			await fsp.writeFile(localVideoPath, videoBuffer)
 		}
 	}
-
 
 	async getMedia(tweet) {
 		let local_media = []

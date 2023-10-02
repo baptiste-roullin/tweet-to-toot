@@ -1,4 +1,3 @@
-//TODO : object object
 
 import { config } from 'dotenv'
 config()

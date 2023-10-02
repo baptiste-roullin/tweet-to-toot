@@ -20,11 +20,11 @@ export function parseParams() {
 				msg: '',
 				type: 'boolean'
 			},
-			'wait': { //TODO implémenter
-				describe: '',
+			'wait': {
+				describe: 'delay between each post, in seconds',
 				demandOption: false,
 				type: 'number',
-				default: 500
+				default: 0.5
 			},
 			'concatWith': { //TODO implémenter
 				describe: '',
@@ -38,13 +38,13 @@ export function parseParams() {
 				type: 'boolean',
 				default: false
 			},
-			'intro': { //TODO implémenter
+			'intro': {
 				describe: '',
 				demandOption: false,
 				type: 'string',
 			}
 		})
-		.parseSync()
+		.parseSync() // parse() typings are more complex.
 
 
 
