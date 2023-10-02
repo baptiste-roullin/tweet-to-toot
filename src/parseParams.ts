@@ -7,7 +7,6 @@ export function parseParams() {
 	const params = yargs(hideBin(process.argv))
 		.options({
 			'ids': {
-				alias: 'id',
 				describe: 'list of comma-separated ids',
 				demandOption: true,
 				msg: 'You must provide or several ID, in the form --id=number,number',
@@ -21,6 +20,7 @@ export function parseParams() {
 				type: 'boolean'
 			},
 			'wait': {
+				alias: 'w',
 				describe: 'delay between each post, in seconds',
 				demandOption: false,
 				type: 'number',
@@ -28,17 +28,20 @@ export function parseParams() {
 			},
 			'concatWith': { //TODO implémenter
 				describe: '',
+				alias: 'c',
 				demandOption: false,
 				type: 'boolean',
 				default: false
 			},
 			'mergeQuote': { //TODO implémenter
+				alias: 'm',
 				describe: '',
 				demandOption: false,
 				type: 'boolean',
 				default: false
 			},
 			'intro': {
+				alias: 'i',
 				describe: '',
 				demandOption: false,
 				type: 'string',
@@ -53,7 +56,7 @@ export function parseParams() {
 			err(`${id}: this string does not seem to be a proper id`)
 		}
 	})
-	console.log(`Publishing ${params.ids.length} threads`)
+	console.log(`Finding ${params.ids.length} threads`)
 
 	return params
 

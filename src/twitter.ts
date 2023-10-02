@@ -5,34 +5,17 @@ import fs from "fs"
 import fsp from "fs/promises"
 import { Tweet } from './types'
 import { params } from './index'
+import { ELEVENTY_IMG_OPTIONS, isValidHttpUrl } from './utils'
 
 
 const dataSource = new DataSource()
 
-const ELEVENTY_IMG_OPTIONS = {
-	widths: [null],
-	formats: ["jpeg"],
-	// If you don’t want to check this into your git repository (and want to fetch them in your build)
-	// outputDir: "./_site/img/",
-	outputDir: "./img/",
-	urlPath: "/img/",
-	cacheDuration: "*",
-	filenameFormat: function (id, src, width, format, options) {
-		return `${id}.${format}`
-	}
-}
+let USERNAME = ''
 
 
 export default class Twitter {
 
-	isValidHttpUrl(string) {
-		let url
-		try {
-			url = new URL(string)
-		} catch (_) {
-			return false
-		}
-	}
+
 
 	async getImage(remoteImageUrl, alt) {
 		let stats = await eleventyImg(remoteImageUrl, ELEVENTY_IMG_OPTIONS)
@@ -115,14 +98,8 @@ export default class Twitter {
 
 	}
 
-	async getFullTweet(tweet) {
+	async getFullTweet(tweet: Tweet, first = false): Promise<Tweet> {
 		let text = tweet.full_text
-
-		//if (params.mergeQuote) {
-		//	if (this.isValidHttpUrl(tweet['full_text'])) {
-		//		tweet = this.replaceQuotingTweetByQuotedTweet(tweet)[0] //TODO : FAIL. et si plusieurs QT ?
-		//	}
-		//}
 
 		let { local_media, textReplacements } = await this.getMedia(tweet)
 
@@ -133,38 +110,69 @@ export default class Twitter {
 		tweet['local_media'] = local_media
 		tweet.full_text = text
 
+		if (!first && params.mergeQuote) {
+			tweet = await this.replaceByQuotedTweet(tweet)
+		}
 		return tweet
 	}
 
-	async startThread(id) {
-		const firstTweet = await dataSource.getTweetById(id)
-		params.userName = firstTweet.in_reply_to_screen_name
-		//console.log(firstTweet)
-		console.log(`thread about ${firstTweet.full_text.slice(0, 50)}...`)
-		return await this.generateThread(firstTweet)
+	// TODO : insert QT without deleting
+	// TODO: et si plusieurs QT ?
+	async replaceByQuotedTweet(tweet: Tweet): Promise<Tweet> {
+
+		if (isValidHttpUrl(tweet.full_text)) {
+
+			const userNameMatcher = new RegExp("https\:\/\/twitter\.com\/" + USERNAME)
+
+			if (userNameMatcher.test(tweet.full_text)) {
+
+				const idMatcher = new RegExp(USERNAME + "\/status\/([0-9]*)$")
+				const quoted_tweet_ID = tweet.entities.urls[0].expanded_url.match(idMatcher)[1]
+				const QT = (await dataSource.getRepliesToId(quoted_tweet_ID))[0]
+				return await this.getFullTweet(QT)
+			}
+		}
+		else return tweet
+
 	}
 
-	async generateThread(firstTweet: Tweet): Promise<Tweet[]> {
-
-		let replies = await dataSource.getRepliesToId(firstTweet.id_str) || []
+	async startThread(id: string) {
 
 		let thread = []
-		thread.push(await this.getFullTweet(firstTweet))
+
+		// We need a first tweet to kickstart the thread.
+		// Difference with Tweetback: we only traverse thread from old to new.
+		// No new to old and no starting in the middle.
+		const firstTweet = await dataSource.getTweetById(id)
+		thread.push(await this.getFullTweet(firstTweet, true))
+
+		// Grabbing your username along the way.
+		USERNAME = firstTweet.in_reply_to_screen_name
+
+		return await this.generateThread(firstTweet, thread)
+	}
+
+	async generateThread(tweet: Tweet, thread: Tweet[]) {
+
+		// Maybe you posted several replies to your tweet, so we get them all.
+		let replies = await dataSource.getRepliesToId(tweet.id_str) || []
+
+
 		if (!replies.length) {
+			console.log(`thread of ${thread.length} messages, about ${thread[0].full_text.slice(0, 50)}...`)
+
 			return thread
 		}
+
 		for (let replyTweet of replies) {
-			let nextTweet = await this.generateThread(replyTweet)
-			const fullTweet = await this.getFullTweet(nextTweet)
-			thread.push(...fullTweet)
+			const fullTweet = await this.getFullTweet(replyTweet)
+			thread.push(fullTweet)
+			return await this.generateThread(fullTweet, thread)
+
 		}
-		return thread
+		return { tweet, thread }
 
 	}
-	async replaceQuotingTweetByQuotedTweet(replyTweet) {
-		const idMatcher = new RegExp(params.userName + "\/status\/(\d*$)")
-		const quoted_tweet_ID = replyTweet.entities.url[0].expanded_url.match(idMatcher)[1]
-		return (await dataSource.getRepliesToId(quoted_tweet_ID))
-	}
+
 
 }
