@@ -1,12 +1,12 @@
 # Tweet To Toot – export your Twitter threads to Mastodon
 
-## VERY MUCH UNFINISHED. THERE SHOULD BE A GREEK LETTER BEFORE ALPHA. IT'S A SORRY MESS. WHY IS THIS EVEN PUBLIC.
+⚠️ ⚠️ ⚠️ **THIS IS A BETA VERSION, USE AT YOUR OWN RISK** ⚠️ ⚠️ ⚠️
 
 You want to break free of the site formerly known as Twitter but do not want to lose your numerous, ongoing, carefully maintained, years-long threads?
 
 This tool is for your: [grab an archive](https://twitter.com/settings/download_your_data) of your Twitter account, republish the threads your want on Mastodon and start anew.
 
-Under the hood is a stripped-down fork of [Tweetback](https://github.com/tweetback/tweetback) and [a client](https://github.com/neet/masto.js/) using the Mastodon API.
+Under the hood is a stripped-down fork of [Tweetback](https://github.com/tweetback/tweetback) and [a client](https://github.com/neet/masto.js/) for the Mastodon API.
 
 ## Required
 
@@ -34,24 +34,24 @@ Examples:
 
 ## Parameters
 
-`--ids`: One or several IDs of twitter posts. These ID can be found at the end of their URL, after "status/". The tool will use these as a starting poing and find more recent replies in your archive. So choose the oldest post in your thread.
+`--ids`: One or several IDs of twitter messages. These ID can be found at the end of their URL, after "status/". The tool will use these as a starting poing and find more recent replies in your archive. So choose the oldest message in your thread.
 
-`--intro`: Short text in quotes. Optional. Append a post at the beginning of your Mastodon thread.
+`--intro`: Short text in quotes. Optional. Append a message at the beginning of your Mastodon thread.
 
 `--wait`: Number of seconds. Waiting period between each request to Mastodon. Default : half a second.
 
 `--dry-run`: Show thread without publishing it.
 
-`--merge`:  Default to false. Defines behavior for quoted tweets of yourself. If false, it will keep the quote as a link to Twitter.com. If true, it will merge the quoting and the quoted message.
+`--merge`:  Default to false. Defines behavior for quoted tweets of yourself. If false, it will keep the quote as a link to Twitter.com. If true, it will merge the quoting and the quoted message. The URL to the quoted message is preserved.
 
 
 ### To do
 
-`--concatWith`: Mastodon post id. Optional. If provided, the thread will be posted as a continuation of this post. Useful if you want merge threads.
+`--concatWith`: Mastodon message id. Optional. If provided, the thread will be messageed as a continuation of this message. Useful if you want merge threads.
 
 
 ## Caveats
 
 - Twitter can show threads with deleted messages in the middle. This tool can't. Workaround: Use it twice and the second time specifiy a `concatWith` option.
 - Use `wait` generously. Because Mastodon default rate limits can be quickly reached with media. And of course because of general respect to instance maintainers.
-
+- As Mastodon doesn't officially support instance customizing the limit of message length, this tool assumes a default length of 500 caracters. When used with the `--merge` paramater, can result in truncated messages.
