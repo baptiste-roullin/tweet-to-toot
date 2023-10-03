@@ -33,7 +33,7 @@ export function parseParams() {
 				type: 'boolean',
 				default: false
 			},
-			'mergeQuote': { //TODO implémenter
+			'mergeQuote': {
 				alias: 'm',
 				describe: '',
 				demandOption: false,

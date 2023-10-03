@@ -18,7 +18,7 @@ export default class DataSource {
 	cachedGetAllPromise: Promise<Tweet[]>
 
 
-	async getRepliesToId(id): Promise<Tweet[]> {
+	async getRepliesToId(id: string): Promise<Tweet[] | []> {
 		if (!id) {
 			return []
 		}
@@ -106,7 +106,7 @@ export default class DataSource {
 		return json
 	}
 
-	async getAllTweets() {
+	async getAllTweets(): Promise<Tweet[]> {
 		if (this.cache.all) {
 			return this.cache.all
 		}

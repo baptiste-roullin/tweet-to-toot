@@ -15,8 +15,6 @@ let USERNAME = ''
 
 export default class Twitter {
 
-
-
 	async getImage(remoteImageUrl, alt) {
 		let stats = await eleventyImg(remoteImageUrl, ELEVENTY_IMG_OPTIONS)
 		let path = stats.jpeg[0].outputPath
@@ -98,7 +96,7 @@ export default class Twitter {
 
 	}
 
-	async getFullTweet(tweet: Tweet, first = false): Promise<Tweet> {
+	async getFullTweet(tweet: Tweet): Promise<Tweet> {
 		let text = tweet.full_text
 
 		let { local_media, textReplacements } = await this.getMedia(tweet)
@@ -110,31 +108,32 @@ export default class Twitter {
 		tweet['local_media'] = local_media
 		tweet.full_text = text
 
-		if (!first && params.mergeQuote) {
-			tweet = await this.replaceByQuotedTweet(tweet)
-		}
 		return tweet
 	}
 
-	// TODO : insert QT without deleting
-	// TODO: et si plusieurs QT ?
-	async replaceByQuotedTweet(tweet: Tweet): Promise<Tweet> {
 
-		if (isValidHttpUrl(tweet.full_text)) {
+	async mergeQT(tweet: Tweet): Promise<Tweet> {
 
-			const userNameMatcher = new RegExp("https\:\/\/twitter\.com\/" + USERNAME)
+		// is the tweet just quoting another tweet (just an URL )
+		const domain = new RegExp("https://twitter.com/")
 
-			if (userNameMatcher.test(tweet.full_text)) {
-
-				const idMatcher = new RegExp(USERNAME + "\/status\/([0-9]*)$")
-				const quoted_tweet_ID = tweet.entities.urls[0].expanded_url.match(idMatcher)[1]
-				const QT = (await dataSource.getRepliesToId(quoted_tweet_ID))[0]
-				return await this.getFullTweet(QT)
-			}
+		if (/*!isValidHttpUrl(tweet.full_text) &&*/ !domain.test(tweet.full_text)) {
+			return tweet
 		}
-		else return tweet
 
+		//Testing if it's a real thread, ie. you replying to yourself.
+		const userNameMatcher = new RegExp("https\:\/\/twitter\.com\/" + USERNAME)
+		if (!userNameMatcher.test(tweet.full_text)) {
+			return tweet
+		}
+		else {
+			const idMatcher = new RegExp(USERNAME + "\/status\/([0-9]*)$")
+			const quoted_tweet_ID = tweet.entities.urls[0].expanded_url.match(idMatcher)[1]
+			const QT = await dataSource.getTweetById(quoted_tweet_ID)
+			return await this.getFullTweet(QT)
+		}
 	}
+
 
 	async startThread(id: string) {
 
@@ -144,7 +143,7 @@ export default class Twitter {
 		// Difference with Tweetback: we only traverse thread from old to new.
 		// No new to old and no starting in the middle.
 		const firstTweet = await dataSource.getTweetById(id)
-		thread.push(await this.getFullTweet(firstTweet, true))
+		thread.push(await this.getFullTweet(firstTweet))
 
 		// Grabbing your username along the way.
 		USERNAME = firstTweet.in_reply_to_screen_name
@@ -165,7 +164,15 @@ export default class Twitter {
 		}
 
 		for (let replyTweet of replies) {
-			const fullTweet = await this.getFullTweet(replyTweet)
+			let fullTweet = await this.getFullTweet(replyTweet)
+			if (params.mergeQuote) {
+				const QT = await this.mergeQT(fullTweet)
+
+				const quotingTweetText = fullTweet.full_text // We save the text from the quoting tweet
+				fullTweet = QT // We erase the original tweet. Nothing interesting remains. If it had QT, it had not any images
+				fullTweet.full_text = quotingTweetText + "\nQT ⬇️\n" + QT.full_text // we concat text from both tweets.
+				fullTweet.full_text = (fullTweet.full_text.length > 500 ? fullTweet.full_text.slice(0, 499) + "…" : fullTweet.full_text)
+			}
 			thread.push(fullTweet)
 			return await this.generateThread(fullTweet, thread)
 

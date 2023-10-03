@@ -42,9 +42,10 @@ Examples:
 
 `--dry-run`: Show thread without publishing it.
 
-### To do
+`--merge`:  Default to false. Defines behavior for quoted tweets of yourself. If false, it will keep the quote as a link to Twitter.com. If true, it will merge the quoting and the quoted message.
 
-`--mergeQuote`:  Default to false. Defines behavior for quoted tweets of yourself. If false, it will keep the quote as a link to Twitter.com. If true, it will merge the content of the quote with the post.
+
+### To do
 
 `--concatWith`: Mastodon post id. Optional. If provided, the thread will be posted as a continuation of this post. Useful if you want merge threads.
 
