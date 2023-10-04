@@ -11,6 +11,8 @@ jobs:
     environment: test
     env: 
       NODE_ENV: dev
+      URL: ${{secrets.URL}}
+      TOKEN: ${{secrets.TOKEN}}
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
