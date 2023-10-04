@@ -1,8 +1,14 @@
 import * as sqlite from 'sqlite3'
 import { Tweet } from './types'
 const sqlite3 = sqlite.verbose()
-const db = new sqlite3.Database("./database/tweet.db")
 
+let db = {}
+if (process.env.NODE_ENV === "dev") {
+	db = new sqlite3.Database("./database/test.db")
+}
+else {
+	db = new sqlite3.Database("./database/tweet.db")
+}
 
 
 export default class DataSource {
