@@ -47,6 +47,7 @@ Examples:
 
 ### To do
 
+* Set posts language.
 * `--concatWith`: Mastodon message id. Optional. If provided, the thread will be messageed as a continuation of this message. Useful if you want merge threads.
 * Handling of branching threads.
 
