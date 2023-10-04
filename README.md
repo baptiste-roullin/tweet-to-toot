@@ -27,9 +27,9 @@ Node v18 or 19. NVM advised if it's not your typical Node environnment.
 
 Examples:
 
-- `npm run publish -- --ids=1157670494390378498 --intro="imported thread, started in 2019 on the Other Site" --dry-run`
+- `npm run publish -- --ids 1157670494390378498 --intro="imported thread, started in 2019 on the Other Site" --dry-run`
 
-- `npm run publish -- --ids=1157670494390378498,1157670494390378498`
+- `npm run publish -- --ids 1157670494390378498 1157670494390378498`
 
 
 ## Parameters
