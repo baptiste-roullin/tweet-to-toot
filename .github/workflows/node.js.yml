@@ -8,11 +8,8 @@ on:
     branches: [ "main" ]
 jobs:
   build:
-    environment: test
-    env: 
+    env:
       NODE_ENV: dev
-      URL: ${{secrets.URL}}
-      TOKEN: ${{secrets.TOKEN}}
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
@@ -27,4 +24,5 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run create-db
-    - run: npm run publish -- "--ids=1322705852017659911,1549322039445659649" "-m" "--wait=20"
+    - run: npm run publish -- --ids=1322705852017659911 intro="test \n https://example.com" -m wait=20
+    - run: npm run publish -- --ids=1322705852017659911,1549322039445659649 wait=20
