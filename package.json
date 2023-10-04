@@ -9,7 +9,7 @@
     "publish": "npx ts-node ./src/index.ts "
   },
   "engines": {
-    "node": "v19.9.0"
+    "node": ">=18.0.0 <20.0.0"  
   },
   "keywords": [
     "Mastodon",
