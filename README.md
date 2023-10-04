@@ -1,6 +1,6 @@
 # Tweet To Toot – export your Twitter threads to Mastodon
 
-⚠️ **THIS IS A BETA VERSION** ⚠️ 
+⚠️ **THIS IS A BETA VERSION** ⚠️
 
 You want to break free of the site formerly known as Twitter but do not want to lose your numerous, ongoing, carefully maintained, years-long threads?
 
