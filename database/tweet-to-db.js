@@ -1,8 +1,18 @@
 // CREDIT: https://github.com/tweetback/tweetback/
 
 const sqlite3 = require("sqlite3").verbose()
-const db = new sqlite3.Database("./database/tweet.db")
 const getDateString = require("./getDateString")
+
+
+let db = {}
+if (process.env.NODE_ENV === "dev") {
+  db = new sqlite3.Database("./database/test.db")
+}
+else {
+  db = new sqlite3.Database("./database/tweet.db")
+}
+
+
 
 function createTable() {
   db.serialize(() => {
