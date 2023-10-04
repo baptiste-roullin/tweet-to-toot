@@ -2,7 +2,6 @@ node_modules/
 .cache
 _site
 .env
-package-lock.json
 .DS_Store
 tweet.db
 tweets.json
