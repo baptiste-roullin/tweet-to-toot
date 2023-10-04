@@ -1,7 +1,13 @@
 require('dotenv').config()
 const { checkInDatabase, logTweetCount, saveToDatabaseApiV1, createTable } = require("./tweet-to-db")
-const tweets = require("./tweets.js")
 
+let tweets = {}
+if (process.env.NODE_ENV === "dev") {
+	tweets = require("./test_data.js")
+}
+else {
+	tweets = require("./tweets.js")
+}
 console.log(`${tweets.length} tweets found in archive.`)
 
 
