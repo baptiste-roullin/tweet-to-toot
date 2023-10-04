@@ -6,12 +6,10 @@ name: Node.js CI
 on:
   push:
     branches: [ "main" ]
-
 jobs:
   build:
     environment: test
     runs-on: [ubuntu-latest, windows-latest]
-
     strategy:
       matrix:
         node-version: [18.x, 19x]
@@ -23,6 +21,6 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: create-db
+    - run: npm run create-db
     - run: npm run publish -- --ids=1322705852017659911 intro="test \n https://example.com" -m wait=20
     - run: npm run publish -- --ids=1322705852017659911,1549322039445659649 wait=20
