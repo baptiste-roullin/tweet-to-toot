@@ -34,7 +34,7 @@ Examples:
 
 ## Parameters
 
-`--ids`: One or several IDs of twitter messages. These ID can be found at the end of their URL, after "status/". The tool will use these as a starting poing and find more recent replies in your archive. So choose the oldest message in your thread.
+`--ids`: One or several, space-separated IDs of twitter messages. These ID can be found at the end of their URL, after "status/". The tool will use these as a starting poing and find more recent replies in your archive. So choose the oldest message in your thread.
 
 `--intro`: Short text in quotes. Optional. Append a message at the beginning of your Mastodon thread.
 
