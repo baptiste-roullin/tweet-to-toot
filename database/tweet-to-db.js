@@ -1,3 +1,5 @@
+// CREDIT: https://github.com/tweetback/tweetback/
+
 const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("./database/tweet.db");
 const getDateString = require( "./getDateString" );
