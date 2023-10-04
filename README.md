@@ -47,8 +47,8 @@ Examples:
 
 ### To do
 
-`--concatWith`: Mastodon message id. Optional. If provided, the thread will be messageed as a continuation of this message. Useful if you want merge threads.
-
+* `--concatWith`: Mastodon message id. Optional. If provided, the thread will be messageed as a continuation of this message. Useful if you want merge threads.
+* Handling of branching threads.
 
 ## Caveats
 
