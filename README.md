@@ -18,7 +18,7 @@ Node v18 or 19. NVM advised if it's not your typical Node environnment.
 - In your terminal, go to the folder of the project.
 - Run `npm install`.
 - Copy `./data/tweets.js` from your Twitter archive zip file into the `./database`. directory of this project.
-- Rename `window.YTD.tweet.part0` in `tweets.js` to `module.exports`.
+- In the file `tweets.js`, rename `window.YTD.tweet.part0` to `module.exports`.
 - Run `npm run create-db`.
 - Grab a Mastodon API token by following [these instructions](https://neet.github.io/masto.js/#md:quick-start).
 - Add the token and the URL or you instance as environnment variables, for instance in a file named `.env` (no extension) at the root of your project.
