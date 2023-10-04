@@ -54,4 +54,4 @@ Examples:
 
 - Twitter can show threads with deleted messages in the middle. This tool can't. Workaround: Use it twice and the second time specifiy a `concatWith` option.
 - Use `wait` generously. Because Mastodon default rate limits can be quickly reached with media. And of course because of general respect to instance maintainers.
-- As Mastodon doesn't officially support instance customizing the limit of message length, this tool assumes a default length of 500 caracters. When used with the `--merge` paramater, can result in truncated messages.
+- As Mastodon doesn't officially support instance customizing the limit of message length, this tool assumes a default length of 500 caracters. When used with the `--merge` parameter, it can result in truncated messages.
