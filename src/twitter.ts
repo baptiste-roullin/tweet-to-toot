@@ -115,15 +115,14 @@ export default class Twitter {
 	async mergeQT(tweet: Tweet, userName: string): Promise<Tweet> {
 
 
-		const userNameMatcher = new RegExp("https\:\/\/twitter\.com\/" + userName)
+		const userNameMatcher = new RegExp("https\:\/\/twitter\.com\/" + userName + "/status/")
 
 		const urlOfQT = tweet.entities.urls.find(url => url.expanded_url.match(userNameMatcher))
 		// array d'arrays
 
 		if (urlOfQT) {
-
-			const idMatcher = new RegExp(userName + "\/status\/([0-9]*)$")
-			const quoted_tweet_ID = tweet.entities.urls[0].expanded_url.match(idMatcher)[1]
+			const idMatcher = new RegExp(userName + "\/status\/([0-9]*)")
+			const quoted_tweet_ID = urlOfQT.expanded_url.match(idMatcher)[1]
 			const QT = await dataSource.getTweetById(quoted_tweet_ID)
 			const fullQT = await this.getFullTweet(QT)
 			tweet.full_text = tweet.full_text + "\nQT ⬇️\n" + QT.full_text
