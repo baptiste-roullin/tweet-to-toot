@@ -8,7 +8,7 @@ on:
     branches: [ "main" ]
 jobs:
   build:
-    environment: test
+    environment: dev
     runs-on: ubuntu-latest
     strategy:
       matrix:
