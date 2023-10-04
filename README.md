@@ -21,7 +21,7 @@ Node v18 or 19. NVM advised if it's not your typical Node environnment.
 - Rename `window.YTD.tweet.part0` in `tweets.js` to `module.exports`.
 - Run `npm run create-db`.
 - Grab a Mastodon API token by following [these instructions](https://neet.github.io/masto.js/#md:quick-start).
-- Add the token and the URL or you instance as environnment variables, for instance in a file named .env at the root of your project.
+- Add the token and the URL or you instance as environnment variables, for instance in a file named `.env` (no extension) at the root of your project.
 
 ## Usage
 
