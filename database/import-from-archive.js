@@ -3,7 +3,7 @@ const { checkInDatabase, logTweetCount, saveToDatabaseApiV1, createTable } = req
 const tweets = require("./tweets.js")
 
 console.log(`${tweets.length} tweets found in archive.`)
-logTweetCount()
+
 
 async function retrieveTweets() {
 	let existingRecordsFound = 0
