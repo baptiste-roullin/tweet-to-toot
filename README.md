@@ -14,12 +14,12 @@ Node v18 or 19. NVM advised if it's not your typical Node environnment.
 
 ## Setup
 
-- Clone or download this repository
-- In your terminal, go to the folder of the project
-- Run npm install
-- Copy `./data/tweets.js` from your Twitter archive zip file into the `./database` directory of this project.
-- Rename `window.YTD.tweet.part0` in `tweets.js` to `module.exports`
-- Run `npm run create-db`
+- Clone or [download](https://github.com/baptiste-roullin/tweet-to-toot/releases/latest) this repository.
+- In your terminal, go to the folder of the project.
+- Run `npm install`.
+- Copy `./data/tweets.js` from your Twitter archive zip file into the `./database`. directory of this project.
+- Rename `window.YTD.tweet.part0` in `tweets.js` to `module.exports`.
+- Run `npm run create-db`.
 - Grab a Mastodon API token by following [these instructions](https://neet.github.io/masto.js/#md:quick-start).
 - Add the token and the URL or you instance as environnment variables, for instance in a file named .env at the root of your project.
 
@@ -29,7 +29,7 @@ Examples:
 
 - `npm run publish -- --ids 1157670494390378498 --intro="imported thread, started in 2019 on the Other Site" --dry-run`
 
-- `npm run publish -- --ids 1157670494390378498 1157670494390378498`
+- `npm run publish -- --ids 1157670494390378498 1157670494390378498 --wait 10`
 
 
 ## Parameters
