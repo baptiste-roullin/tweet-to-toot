@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     environment: test
-    runs-on: [ubuntu-latest, windows-latest]
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [18.x, 19x]
