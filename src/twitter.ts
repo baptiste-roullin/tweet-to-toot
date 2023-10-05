@@ -127,7 +127,7 @@ export default class Twitter {
 			const fullQT = await this.getFullTweet(QT)
 			tweet.full_text = tweet.full_text + "\nQT ⬇️\n" + QT.full_text
 			tweet.full_text = (tweet.full_text.length > 500 ? tweet.full_text.slice(0, 498) + "…" : tweet.full_text)
-			tweet.entities = merge(tweet.entities, QT.entities)
+			tweet.entities = merge(tweet.entities, QT.entities) //TODO : doesn't work.
 			return tweet
 		}
 		else {
