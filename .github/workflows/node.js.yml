@@ -14,7 +14,6 @@ jobs:
       URL: ${{secrets.URL}}
       TOKEN: ${{secrets.TOKEN}}
     runs-on: windows-latest
-    strategy:
     steps:
     - uses: actions/checkout@v3
     - name: Use Node.js 18
