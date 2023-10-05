@@ -6,6 +6,12 @@ on:
     paths-ignore:
     - '**/README.md'
     - '**/*.yml'
+  workflow_dispatch:
+    inputs:
+      manual:
+        description: 'lorem'
+        required: true
+        default: 'lorem'
 jobs:
   build:
     environment: test
