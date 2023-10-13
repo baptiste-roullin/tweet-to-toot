@@ -8,7 +8,6 @@ import { Tweet } from './types'
 import { params } from './index'
 import { ELEVENTY_IMG_OPTIONS, isValidHttpUrl } from './utils'
 
-//TODO : check handling of forking threads.
 
 const dataSource = new DataSource()
 
@@ -146,34 +145,33 @@ export default class Twitter {
 		const firstTweet = await dataSource.getTweetById(id)
 		thread.push(await this.getFullTweet(firstTweet))
 
-
 		return await this.generateThread(firstTweet, thread)
 	}
 
-	async generateThread(tweet: Tweet, thread: Tweet[]) {
+	async generateThread(tweet: Tweet, thread: Tweet[]): Promise<{ tweet: Tweet; thread: Tweet[] }> {
 
 		// Maybe you posted several replies to your tweet, so we get them all.
 		let replies = await dataSource.getRepliesToId(tweet.id_str) || []
 		// Grabbing your username along the way.
 
 
-		if (!replies.length) {
-			console.log(`thread of ${thread.length} messages, about ${thread[0].full_text.slice(0, 50)}...`)
+		if (replies.length) {
 
-			return thread
-		}
-		const userName = replies[0].in_reply_to_screen_name
+			const userName = replies[0].in_reply_to_screen_name
 
-		for (let replyTweet of replies) {
-			let fullTweet = await this.getFullTweet(replyTweet)
-			if (params.mergeQuote) {
-				fullTweet = await this.mergeQT(fullTweet, userName)
+			for (const replyTweet of replies) {
+				let fullTweet = await this.getFullTweet(replyTweet)
+				if (params.mergeQuote) {
+					fullTweet = await this.mergeQT(fullTweet, userName)
+				}
+				thread.push(fullTweet)
+				await this.generateThread(fullTweet, thread)
 			}
-			thread.push(fullTweet)
-			return await this.generateThread(fullTweet, thread)
-
 		}
 		return { tweet, thread }
+
+
+
 
 	}
 

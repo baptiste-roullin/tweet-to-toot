@@ -8,6 +8,8 @@ This tool is for your: [grab an archive](https://twitter.com/settings/download_y
 
 Under the hood is a heavy fork of [Tweetback](https://github.com/tweetback/tweetback) and [a client](https://github.com/neet/masto.js/) for the Mastodon API.
 
+it works with pictures and videos. It even flattens branching threads (meaning: if you replied several times to the same tweet, all replies with be inserted in the main thread.)
+
 ## Required
 
 Node v18 or 19. NVM advised if it's not your typical Node environnment.
@@ -49,7 +51,7 @@ Examples:
 
 * Set posts language.
 * `--concatWith`: Mastodon message id. Optional. If provided, the thread will be messageed as a continuation of this message. Useful if you want merge threads.
-* Handling of branching threads.
+* weird 404 on some pictures
 
 ## Caveats
 

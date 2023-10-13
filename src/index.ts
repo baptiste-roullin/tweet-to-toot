@@ -14,17 +14,18 @@ export const params = parseParams();
 
 	async function generateThread(id: string) {
 		const twitter = new Twitter()
-		const twitterThread = await twitter.startThread(id)
+		const { thread } = await twitter.startThread(id)
+		console.log(`thread of ${thread.length} messages, about ${thread[0].full_text.slice(0, 50)}...`)
 
 		if (params['dry-run']) {
-			twitterThread.forEach(el => {
+			thread.forEach(el => {
 				console.log(`
 ${el.date}
 ${el.full_text}
 ====================`)
 			})
 		}
-		else { await publishMastoThread(twitterThread) }
+		else { await publishMastoThread(thread) }
 	}
 
 	const ids = params.ids as string[]
