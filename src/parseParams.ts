@@ -24,10 +24,10 @@ export function parseParams() {
 				describe: 'delay between each post, in seconds',
 				demandOption: false,
 				type: 'number',
-				default: 0.5
+				default: 1
 			},
 			'concatWith': { //TODO implémenter
-				describe: '',
+				describe: 'Optional Mastodon message id. If provided, the thread will be messageed as a continuation of this message. Useful if you want merge threads.',
 				alias: 'c',
 				demandOption: false,
 				type: 'boolean',
@@ -35,14 +35,20 @@ export function parseParams() {
 			},
 			'mergeQuote': {
 				alias: 'm',
-				describe: '',
+				describe: 'Defines behavior for quoted tweets of yourself. If false, it will keep the quote as a link to Twitter.com. If true, it will merge the quoting and the quoted message.',
 				demandOption: false,
 				type: 'boolean',
 				default: false
 			},
 			'intro': {
 				alias: 'i',
-				describe: '',
+				describe: 'Append a message at the beginning of your Mastodon thread.',
+				demandOption: false,
+				type: 'string',
+			},
+			'lang': {
+				alias: 'l',
+				describe: 'Set language for the Mastodon thread. Use a 639-1 string ("en" for english, "fr" for french...)',
 				demandOption: false,
 				type: 'string',
 			}

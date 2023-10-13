@@ -20,16 +20,28 @@ const masto = createRestAPIClient({
 })
 
 async function publishToot(tweet, id = null) {
-	if (tweet.local_media) {
+	if (tweet.local_media.lenth > 1) {
 		const attachments = await Promise.all(
+
 			tweet.local_media.map(async image => {
-				const file = fs.readFileSync(image.path)
-				return masto.v2.media.create({
-					file: new Blob([file]),
-					description: image?.alt,
-				})
-			}))
-		var attachmentIDs = attachments.map(attach => attach.id) || null
+				try {
+					if (image.path) {
+						const file = fs.readFileSync(image.path)
+						return masto.v2.media.create({
+							file: new Blob([file]),
+							description: image?.alt,
+						})
+					}
+					else {
+						return null
+					}
+				} catch (error) {
+					console.log(error)
+
+				}
+			})
+		)
+		var attachmentIDs = attachments.map(attach => attach.id)
 	}
 	else {
 		attachmentIDs = []
@@ -40,7 +52,8 @@ async function publishToot(tweet, id = null) {
 		status: tweet.full_text, // renderFullText() ?
 		visibility: "public",
 		inReplyToId: id || null,
-		language: (tweet.lang === '' || tweet.lang === 'zxx' ? process.env.LANG : tweet.lang)
+		language: params.lang || (tweet.lang === 'zxx' ? "" : tweet.lang) || ""
+
 	})
 	return status
 
