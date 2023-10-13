@@ -15,9 +15,14 @@ const dataSource = new DataSource()
 export default class Twitter {
 
 	async getImage(remoteImageUrl, alt) {
-		let stats = await eleventyImg(remoteImageUrl, ELEVENTY_IMG_OPTIONS)
-		let path = stats.jpeg[0].outputPath
-		return { path, alt }
+		try {
+			let stats = await eleventyImg(remoteImageUrl, ELEVENTY_IMG_OPTIONS)
+			let path = stats.jpeg[0].outputPath
+			return { path, alt }
+		} catch (error) {
+			return undefined
+		}
+
 	}
 
 	async saveVideo(remoteVideoUrl, localVideoPath) {
@@ -58,10 +63,10 @@ export default class Twitter {
 					textReplacements.set(media.url, { newString: "" })
 
 					try {
-						local_media.push(await this.getImage(media.media_url_https, media.alt_text || ""))
+						local_media.push(await this.getImage(media.media_url_https, media.alt_text))
 					} catch (e) {
-						console.log("Image request error", e.message)
-						local_media.push(media.media_url_https)
+						console.log("Image request error", e.message) // TODO : retester avec archive récente
+						//local_media.push(media.media_url_https)
 					}
 				} else if (media.type === "animated_gif" || media.type === "video") {
 					if (media.video_info && media.video_info.variants) {
@@ -127,7 +132,7 @@ export default class Twitter {
 				tweet.extended_entities = { "media": [] }
 			}
 			if (QT?.extended_entities?.media) {
-				tweet.extended_entities.media.push(...QT.extended_entities.media) // TODO
+				tweet.extended_entities.media.push(...QT.extended_entities.media) // TODO: ?
 			}
 			const fullQT = await this.getFullTweet(QT)
 			tweet.full_text = tweet.full_text + "\nQT ⬇️\n" + QT.full_text

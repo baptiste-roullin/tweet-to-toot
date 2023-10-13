@@ -21,21 +21,17 @@ const masto = createRestAPIClient({
 })
 
 async function publishToot(tweet, id = null) {
-	if (tweet.local_media.lenth > 1) {
+	if (tweet.local_media.length > 0) {
 		const attachments = await Promise.all(
 
-			tweet.local_media.map(async image => {
+			tweet.local_media.filter(image => image !== undefined).map(async image => {
 				try {
-					if (image.path) {
-						const file = fs.readFileSync(image.path)
-						return masto.v2.media.create({
-							file: new Blob([file]),
-							description: image?.alt,
-						})
-					}
-					else {
-						return null
-					}
+					const file = fs.readFileSync(image.path)
+					return masto.v2.media.create({
+						file: new Blob([file]),
+						description: image?.alt,
+					})
+
 				} catch (error) {
 					console.log(error)
 
