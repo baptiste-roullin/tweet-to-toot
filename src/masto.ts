@@ -7,6 +7,7 @@ import { err } from './utils'
 import fs from "node:fs"
 import { Blob } from 'buffer'
 import { params } from './index'
+const entities = require("entities")
 
 if (!process.env.URL) {
 	err("You must provide an instance URL")
@@ -49,7 +50,7 @@ async function publishToot(tweet, id = null) {
 
 	const status = await masto.v1.statuses.create({
 		mediaIds: attachmentIDs,
-		status: tweet.full_text, // renderFullText() ?
+		status: entities.decodeHTML(tweet.full_text),
 		visibility: "public",
 		inReplyToId: id || null,
 		language: params.lang || (tweet.lang === 'zxx' ? "" : tweet.lang) || ""
@@ -78,7 +79,6 @@ export async function publishMastoThread(thread) {
 	}
 
 	for (let tweet of thread) {
-		//appendPreface()
 		const { id, uri } = await publishToot(tweet, nextID)
 		nextID = id
 		publishedURL = uri

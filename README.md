@@ -20,10 +20,10 @@ Node v18 or 19. NVM advised if it's not your typical Node environnment.
 - In your terminal, go to the folder of the project.
 - Run `npm install`.
 - Copy `./data/tweets.js` from your Twitter archive zip file into the `./database`. directory of this project.
-- Rename `window.YTD.tweet.part0` in `tweets.js` to `module.exports`.
+- In the file `tweets.js`, rename `window.YTD.tweet.part0` to `module.exports`.
 - Run `npm run create-db`.
 - Grab a Mastodon API token by following [these instructions](https://neet.github.io/masto.js/#md:quick-start).
-- Add the token and the URL or you instance as environnment variables, for instance in a file named `.env` (no extension) at the root of your project.
+- Add the token and the URL of you instance as environnment variables, for instance in a file named `.env` (no extension) at the root of your project.
 
 ## Usage
 
@@ -55,11 +55,11 @@ Note on languages:
 
 ### To do
 
-* `--concatWith`: Optional Mastodon message id. If provided, the thread will be messageed as a continuation of this message. Useful if you want merge threads.
+* `--concatWith`: Optional Mastodon message id. If provided, the thread will be posted as a continuation of this message. Useful if you want merge threads.
 * weird 404 on some attempts to download Twitter pictures
 
 ## Caveats
 
 - Twitter can show threads with deleted messages in the middle. We can't. Workaround: Use it twice and the second time specifiy a `concatWith` option.
 - Use `wait` generously. Because Mastodon default rate limits can be quickly reached with media. And of course because of general respect to instance maintainers.
-- As Mastodon doesn't officially support instance customizing the limit of message length, we assume a default length of 500 caracters. When used with the `--merge` parameter, it can result in truncated messages.
+- As Mastodon doesn't officially support a way for instances to customize a limit to message length, this tool assumes a default length of 500 caracters. When used with the `--merge` parameter, it can result in truncated messages.

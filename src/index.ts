@@ -4,9 +4,6 @@ import { parseParams } from './parseParams'
 import Twitter from './twitter'
 import { err } from './utils'
 
-
-
-
 export const params = parseParams();
 
 (async function () {

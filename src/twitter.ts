@@ -123,10 +123,15 @@ export default class Twitter {
 			const idMatcher = new RegExp(userName + "\/status\/([0-9]*)")
 			const quoted_tweet_ID = urlOfQT.expanded_url.match(idMatcher)[1]
 			const QT = await dataSource.getTweetById(quoted_tweet_ID)
+			if (!tweet.extended_entities) {
+				tweet.extended_entities = { "media": [] }
+			}
+			if (QT?.extended_entities?.media) {
+				tweet.extended_entities.media.push(...QT.extended_entities.media) // TODO
+			}
 			const fullQT = await this.getFullTweet(QT)
 			tweet.full_text = tweet.full_text + "\nQT ⬇️\n" + QT.full_text
 			tweet.full_text = (tweet.full_text.length > 500 ? tweet.full_text.slice(0, 498) + "…" : tweet.full_text)
-			tweet.entities = merge(tweet.entities, QT.entities)
 			return tweet
 		}
 		else {
