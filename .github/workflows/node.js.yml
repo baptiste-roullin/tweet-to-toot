@@ -2,7 +2,7 @@ name: Testing
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "pre-main" ]
 jobs:
   build:
     environment: test
