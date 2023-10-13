@@ -2,7 +2,7 @@ name: Testing
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "pre-main" ]
     paths-ignore:
     - '**/README.md'
     - '**/*.yml'
