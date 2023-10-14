@@ -6,7 +6,7 @@ import fs from "fs"
 import fsp from "fs/promises"
 import { Tweet } from './types'
 import { params } from './index'
-import { ELEVENTY_IMG_OPTIONS, isValidHttpUrl } from './utils'
+import { ELEVENTY_IMG_OPTIONS, err, isValidHttpUrl } from './utils'
 
 
 const dataSource = new DataSource()
@@ -14,13 +14,26 @@ const dataSource = new DataSource()
 
 export default class Twitter {
 
-	async getImage(remoteImageUrl, alt) {
+	async getImage(remoteImageUrl: string, alt: string, id: string) {
 		try {
 			let stats = await eleventyImg(remoteImageUrl, ELEVENTY_IMG_OPTIONS)
 			let path = stats.jpeg[0].outputPath
 			return { path, alt }
 		} catch (error) {
-			return undefined
+			const imageName = remoteImageUrl.match(/media\/(.*\.(png|jpg|jpeg))$/)[1]
+			const fallbackPath = ELEVENTY_IMG_OPTIONS.outputDir + id + '-' + imageName
+
+			if (fs.existsSync(fallbackPath)) {
+				let path = fallbackPath
+				return { path, alt }
+			}
+			else {
+				const error = new Error(`
+${remoteImageUrl}
+Image not found at this URL. Twitter probably moved it.
+Workaround: find the file named  [gibberish]${id + '-' + imageName} in the folder tweet_media of your archive and move it in the img folder of this project. `)
+				return error
+			}
 		}
 
 	}
@@ -62,11 +75,13 @@ export default class Twitter {
 					// remove photo URL
 					textReplacements.set(media.url, { newString: "" })
 
-					try {
-						local_media.push(await this.getImage(media.media_url_https, media.alt_text))
-					} catch (e) {
-						console.log("Image request error", e.message) // TODO : retester avec archive récente
-						//local_media.push(media.media_url_https)
+					const img = await this.getImage(media.media_url_https, media.alt_text, tweet.id_str)
+					if (img instanceof Error) {
+						err(img)
+					}
+					else {
+						local_media.push(img)
+
 					}
 				} else if (media.type === "animated_gif" || media.type === "video") {
 					if (media.video_info && media.video_info.variants) {
@@ -132,7 +147,7 @@ export default class Twitter {
 				tweet.extended_entities = { "media": [] }
 			}
 			if (QT?.extended_entities?.media) {
-				tweet.extended_entities.media.push(...QT.extended_entities.media) // TODO: ?
+				tweet.extended_entities.media.push(...QT.extended_entities.media)
 			}
 			const fullQT = await this.getFullTweet(QT)
 			tweet.full_text = tweet.full_text + "\nQT ⬇️\n" + QT.full_text
