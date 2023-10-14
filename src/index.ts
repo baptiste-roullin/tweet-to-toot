@@ -31,6 +31,9 @@ ${el.full_text}
 		if (params.intro) {
 			err("The intro parameter can be used when you provide only sone thread ID ")
 		}
+		if (params.concatWith) {
+			err("The concatWith parameter can be used when you provide only sone thread ID ")
+		}
 		await Promise.all(ids.map(id => generateThread(id)))
 
 	}

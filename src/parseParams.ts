@@ -30,8 +30,7 @@ export function parseParams() {
 				describe: 'Optional Mastodon message id. If provided, the thread will be messageed as a continuation of this message. Useful if you want merge threads.',
 				alias: 'c',
 				demandOption: false,
-				type: 'boolean',
-				default: false
+				type: 'string',
 			},
 			'mergeQuote': {
 				alias: 'm',
