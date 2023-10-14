@@ -60,19 +60,21 @@ async function publishToot(tweet, id = null) {
 //publishTooot("test reply",  /*[{ path: "zYIkgWeIS_.jpeg", alt: "test" }], 111077353297617849*/)
 
 export async function publishMastoThread(thread) {
+	let nextID = ""
+	let publishedURL = ""
 
+	if (params.concatWith) {
+		nextID = params.concatWith
+	}
 	if (params.intro) {
 		const status = await masto.v1.statuses.create({
 			status: params.intro,
 			visibility: "public",
+			inReplyToId: nextID || null,
 		})
-		var nextID = status.id
-		var publishedURL
+		nextID = status.id
 	}
-	else {
-		nextID = ""
-		publishedURL = ""
-	}
+
 
 	for (let tweet of thread) {
 		const { id, uri } = await publishToot(tweet, nextID)
