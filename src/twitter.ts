@@ -31,7 +31,7 @@ export default class Twitter {
 				const error = new Error(`
 ${remoteImageUrl}
 Image not found at this URL. Twitter probably moved it.
-Workaround: find the file named  [gibberish]${id + '-' + imageName} in the folder tweet_media of your archive and move it in the img folder of this project. `)
+Workaround: find the file named ${id + '-' + imageName} in the folder tweet_media of your archive and move it in the img folder of this project. `)
 				return error
 			}
 		}
@@ -46,7 +46,10 @@ Workaround: find the file named  [gibberish]${id + '-' + imageName} in the folde
 		}
 	}
 
-	async getMedia(tweet) {
+	async getMedia(tweet): Promise<{
+		local_media: any[]
+		textReplacements: Map<any, any>
+	}> {
 		let local_media = []
 		let textReplacements = new Map()
 
@@ -104,7 +107,19 @@ Workaround: find the file named  [gibberish]${id + '-' + imageName} in the folde
 							await this.saveVideo(remoteVideoUrl, `./${videoUrl}`)
 							local_media.push({ path: videoUrl })
 						} catch (e) {
-							console.log("Video request error", e.message)
+							const imageName = remoteVideoUrl.match(/\/vid\/.*\/(.*\.mp4).*$/)[1]
+							const fallbackPath = ELEVENTY_IMG_OPTIONS.outputDir + tweet.id_str + '-' + imageName
+
+							if (fs.existsSync(fallbackPath)) {
+								local_media.push({ path: fallbackPath })
+							}
+							else {
+								const error = new Error(`
+${remoteVideoUrl}
+Video not found at this URL. Twitter probably moved it.
+Workaround: find the file named ${tweet.id_str + '-' + imageName} in the folder tweet_media of your archive and move it in the video folder of this project. `)
+								throw error
+							}
 						}
 					}
 				}

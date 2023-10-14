@@ -46,6 +46,8 @@ Examples:
 
 `--merge`:  Default to false. Defines behavior for quoted tweets of yourself. If false, it will keep the quote as a link to Twitter.com. If true, it will merge the quoting and the quoted message. The URL to the quoted message is preserved.
 
+`--concatWith`: Optional Mastodon message id. If provided, the thread will be posted as a continuation of this message. Useful if you want merge threads.
+
 `--lang`: Optional. Set language for the Mastodon thread. Use a 639-1 string ("en" for english, "fr" for french...).
 
 Note on languages:
@@ -53,12 +55,8 @@ Note on languages:
 - By default, we use the attribute present in each message of your Twitter archive, because it seems good at guessing (mainstream?) languages. So it's useful for preserving multi-lingual threads.
 - The priority order is: the `--lang` parameter, the attribute from your archive, the parameter from your Mastodon account.
 
-### To do
-
-* `--concatWith`: Optional Mastodon message id. If provided, the thread will be posted as a continuation of this message. Useful if you want merge threads.
-* weird 404 on some attempts to download Twitter pictures
-
 ## Caveats
+
 
 - Twitter can show threads with deleted messages in the middle. We can't. Workaround: Use it twice and the second time specifiy a `concatWith` option.
 - Use `wait` generously. Because Mastodon default rate limits can be quickly reached with media. And of course because of general respect to instance maintainers.
