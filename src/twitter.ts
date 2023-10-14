@@ -31,18 +31,37 @@ export default class Twitter {
 				const error = new Error(`
 ${remoteImageUrl}
 Image not found at this URL. Twitter probably moved it.
-Workaround: find the file named ${id + '-' + imageName} in the folder tweet_media of your archive and move it in the img folder of this project. `)
+Workaround: find the file named ${id + '-' + imageName} in the folder tweets_media of your archive and move it in the img folder of this project. `)
 				return error
 			}
 		}
 
 	}
 
-	async saveVideo(remoteVideoUrl, localVideoPath) {
-		let videoBuffer = await eleventyFetch(remoteVideoUrl)
 
-		if (!fs.existsSync(localVideoPath)) {
-			await fsp.writeFile(localVideoPath, videoBuffer)
+	async getVideo(remoteVideoUrl, localVideoPath, id) {
+
+		try {
+			let videoBuffer = await eleventyFetch(remoteVideoUrl)
+
+			if (!fs.existsSync(localVideoPath)) {
+				await fsp.writeFile(localVideoPath, videoBuffer)
+			}
+		} catch (error) {
+
+			const imageName = remoteVideoUrl.match(/\/vid\/.*\/(.*\.mp4).*$/)[1]
+			const fallbackPath = ELEVENTY_IMG_OPTIONS.outputDir + id + '-' + imageName
+
+			if (fs.existsSync(fallbackPath)) {
+				return fallbackPath
+			}
+			else {
+				const error = new Error(`
+${remoteVideoUrl}
+Video not found at this URL. Twitter probably moved it.
+Workaround: find the file named ${id + '-' + imageName} in the folder tweets_media of your archive and move it in the media folder of this project. `)
+				return error
+			}
 		}
 	}
 
@@ -100,26 +119,14 @@ Workaround: find the file named ${id + '-' + imageName} in the folder tweet_medi
 						}
 
 						let remoteVideoUrl = videoResults[0].url
+						let videoUrl = `video/${tweet.id}.mp4`
+						const finalPath = await this.getVideo(remoteVideoUrl, './' + videoUrl, tweet.id_str)
 
-						try {
-							let videoUrl = remoteVideoUrl
-							videoUrl = `video/${tweet.id}.mp4`
-							await this.saveVideo(remoteVideoUrl, `./${videoUrl}`)
-							local_media.push({ path: videoUrl })
-						} catch (e) {
-							const imageName = remoteVideoUrl.match(/\/vid\/.*\/(.*\.mp4).*$/)[1]
-							const fallbackPath = ELEVENTY_IMG_OPTIONS.outputDir + tweet.id_str + '-' + imageName
-
-							if (fs.existsSync(fallbackPath)) {
-								local_media.push({ path: fallbackPath })
-							}
-							else {
-								const error = new Error(`
-${remoteVideoUrl}
-Video not found at this URL. Twitter probably moved it.
-Workaround: find the file named ${tweet.id_str + '-' + imageName} in the folder tweet_media of your archive and move it in the video folder of this project. `)
-								throw error
-							}
+						if (finalPath instanceof Error) {
+							err(finalPath)
+						}
+						else {
+							local_media.push({ path: finalPath })
 						}
 					}
 				}
@@ -129,6 +136,9 @@ Workaround: find the file named ${tweet.id_str + '-' + imageName} in the folder 
 		return { local_media, textReplacements }
 
 	}
+
+
+
 
 	async getFullTweet(tweet: Tweet): Promise<Tweet> {
 		let text = tweet.full_text
@@ -173,7 +183,6 @@ Workaround: find the file named ${tweet.id_str + '-' + imageName} in the folder 
 			return tweet
 		}
 	}
-
 
 	async startThread(id: string) {
 
