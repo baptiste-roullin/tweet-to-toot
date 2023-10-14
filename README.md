@@ -53,7 +53,7 @@ Examples:
 Note on languages:
 
 - By default, we use the attribute present in each message of your Twitter archive, because it seems good at guessing (mainstream?) languages. So it's useful for preserving multi-lingual threads.
-- The priority order is: the `--lang` parameter, the attribute from your archive, the parameter from your Mastodon account.
+- The priority order is: the `--lang` parameter, then the attribute from your archive, then the parameter from your Mastodon account.
 
 ## Caveats
 
