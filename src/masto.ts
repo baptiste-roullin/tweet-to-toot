@@ -29,7 +29,7 @@ async function publishToot(tweet, id = null) {
 					const file = fs.readFileSync(image.path)
 					return masto.v2.media.create({
 						file: new Blob([file]),
-						description: image?.alt,
+						description: image?.alt || "",
 					})
 
 				} catch (error) {
@@ -55,9 +55,6 @@ async function publishToot(tweet, id = null) {
 	return status
 
 }
-
-
-//publishTooot("test reply",  /*[{ path: "zYIkgWeIS_.jpeg", alt: "test" }], 111077353297617849*/)
 
 export async function publishMastoThread(thread) {
 	let nextID = ""
