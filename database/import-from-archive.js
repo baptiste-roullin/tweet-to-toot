@@ -1,3 +1,4 @@
+//@ts-nocheck
 require('dotenv').config()
 const { checkInDatabase, logTweetCount, saveToDatabaseApiV1, createTable } = require("./tweet-to-db")
 

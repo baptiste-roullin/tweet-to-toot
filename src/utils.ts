@@ -17,8 +17,8 @@ export function isValidHttpUrl(string) {
 export const ELEVENTY_IMG_OPTIONS = {
 	widths: [null],
 	formats: ["jpeg"],
-	outputDir: "./media/",
-	urlPath: "/media/",
+	outputDir: "./data/tweets_media",
+	urlPath: "/data/tweets_media",
 	cacheDuration: "*",
 	filenameFormat: function (id, src, width, format, options) {
 		return `${id}.${format}`

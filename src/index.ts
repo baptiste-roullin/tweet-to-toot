@@ -1,13 +1,23 @@
+#!/usr/bin/env node
+
+//TODO : create bin.ts, add it to package.json
+//  add "main": "./lib/index.js",
+// add dev script with TS-node ?
+//TODO : merge create-db and publish. add test of db existence.
 
 import { publishMastoThread } from './masto'
 import { parseParams } from './parseParams'
 import Twitter from './twitter'
 import { err } from './utils'
 
-export const params = parseParams();
+export const params = parseParams()
+console.log("test")
+module.exports = {
 
-(async function () {
+}
 
+async function () {
+	console.log("test")
 
 	async function generateThread(id: string) {
 		const twitter = new Twitter()
@@ -42,4 +52,5 @@ ${el.full_text}
 		await generateThread(ids[0])
 	}
 
-})()
+}
+
