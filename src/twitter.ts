@@ -5,7 +5,7 @@ const merge = require('deepmerge')
 import fs from "fs"
 import fsp from "fs/promises"
 import { Tweet } from './types'
-import { params } from './index'
+import { params } from '.'
 import { ELEVENTY_IMG_OPTIONS, err, isValidHttpUrl } from './utils'
 
 
@@ -16,24 +16,20 @@ export default class Twitter {
 
 	async getImage(remoteImageUrl: string, alt: string, id: string) {
 		try {
-			let stats = await eleventyImg(remoteImageUrl, ELEVENTY_IMG_OPTIONS)
-			let path = stats.jpeg[0].outputPath
-			return { path, alt }
-		} catch (error) {
 			const imageName = remoteImageUrl.match(/media\/(.*\.(png|jpg|jpeg))$/)[1]
-			const fallbackPath = ELEVENTY_IMG_OPTIONS.outputDir + id + '-' + imageName
+			const localPath = ELEVENTY_IMG_OPTIONS.outputDir + id + '-' + imageName
 
-			if (fs.existsSync(fallbackPath)) {
-				let path = fallbackPath
-				return { path, alt }
+			if (fs.existsSync(localPath)) {
+				return { path: localPath, alt }
 			}
 			else {
-				const error = new Error(`
-${remoteImageUrl}
-Image not found at this URL. Twitter probably moved it.
-Workaround: find the file named ${id + '-' + imageName} in the folder tweets_media of your archive and move it in the media folder of this project. `)
-				return error
+				let stats = await eleventyImg(remoteImageUrl, ELEVENTY_IMG_OPTIONS)
+				let path = stats.jpeg[0].outputPath
+				return { path, alt }
 			}
+		} catch (error) {
+			console.log(error)
+
 		}
 
 	}
@@ -42,13 +38,6 @@ Workaround: find the file named ${id + '-' + imageName} in the folder tweets_med
 	async getVideo(remoteVideoUrl, localVideoPath, id) {
 
 		try {
-			let videoBuffer = await eleventyFetch(remoteVideoUrl)
-
-			if (!fs.existsSync(localVideoPath)) {
-				await fsp.writeFile(localVideoPath, videoBuffer)
-			}
-		} catch (error) {
-
 			const imageName = remoteVideoUrl.match(/\/vid\/.*\/(.*\.mp4).*$/)[1]
 			const fallbackPath = ELEVENTY_IMG_OPTIONS.outputDir + id + '-' + imageName
 
@@ -56,12 +45,14 @@ Workaround: find the file named ${id + '-' + imageName} in the folder tweets_med
 				return fallbackPath
 			}
 			else {
-				const error = new Error(`
-${remoteVideoUrl}
-Video not found at this URL. Twitter probably moved it.
-Workaround: find the file named ${id + '-' + imageName} in the folder tweets_media of your archive and move it in the media folder of this project. `)
-				return error
+				let videoBuffer = await eleventyFetch(remoteVideoUrl)
+
+				if (!fs.existsSync(localVideoPath)) {
+					await fsp.writeFile(localVideoPath, videoBuffer)
+				}
 			}
+		} catch (error) {
+			console.log(error)
 		}
 	}
 
@@ -98,13 +89,7 @@ Workaround: find the file named ${id + '-' + imageName} in the folder tweets_med
 					textReplacements.set(media.url, { newString: "" })
 
 					const img = await this.getImage(media.media_url_https, media.alt_text, tweet.id_str)
-					if (img instanceof Error) {
-						err(img)
-					}
-					else {
-						local_media.push(img)
-
-					}
+					local_media.push(img)
 				} else if (media.type === "animated_gif" || media.type === "video") {
 					if (media.video_info && media.video_info.variants) {
 						textReplacements.set(media.url, { newString: "" })
@@ -121,13 +106,8 @@ Workaround: find the file named ${id + '-' + imageName} in the folder tweets_med
 						let remoteVideoUrl = videoResults[0].url
 						let videoUrl = `video/${tweet.id}.mp4`
 						const finalPath = await this.getVideo(remoteVideoUrl, './' + videoUrl, tweet.id_str)
+						local_media.push({ path: finalPath })
 
-						if (finalPath instanceof Error) {
-							err(finalPath)
-						}
-						else {
-							local_media.push({ path: finalPath })
-						}
 					}
 				}
 			}
