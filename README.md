@@ -24,6 +24,7 @@ Node v18 or 19. NVM advised if it's not your typical Node environnment.
 - Run `npm run create-db`.
 - Grab a Mastodon API token by following [these instructions](https://neet.github.io/masto.js/#md:quick-start).
 - Add the token and the URL of you instance as environnment variables, for instance in a file named `.env` (no extension) at the root of your project.
+- *Optional (see caveats)*:	Move all the content from the folder `tweets_media` of your archive to the `media` folder of this project.
 
 ## Usage
 
@@ -52,12 +53,14 @@ Examples:
 
 Note on languages:
 
-- By default, we use the attribute present in each message of your Twitter archive, because it seems good at guessing (mainstream?) languages. So it's useful for preserving multi-lingual threads.
+- By default, we use the attribute present in each message of your Twitter archive, because it seems good at guessing languages (or at least western mainstream ones). So it's useful for preserving multi-lingual threads.
 - The priority order is: the `--lang` parameter, then the attribute from your archive, then the parameter from your Mastodon account.
 
 ## Caveats
 
-
+- Tweet-To-Toot keeps the Tweetback logic of getting pictures and videos from remote URLs present in your Archive. Unfortunately, these URLs may be outdated, even with a few weeks old export. Workarounds if you get a error:
+	- Move all the content from the folder `tweets_media` of your archive to the `media` folder of this project.
+	- Or request a fresh export.
 - Twitter can show threads with deleted messages in the middle. We can't. Workaround: Use it twice and the second time specifiy a `concatWith` option.
 - Use `wait` generously. Because Mastodon default rate limits can be quickly reached with media. And of course because of general respect to instance maintainers.
 - As Mastodon doesn't officially support a way for instances to customize a limit to message length, this tool assumes a default length of 500 caracters. When used with the `--merge` parameter, it can result in truncated messages.

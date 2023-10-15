@@ -31,7 +31,7 @@ export default class Twitter {
 				const error = new Error(`
 ${remoteImageUrl}
 Image not found at this URL. Twitter probably moved it.
-Workaround: find the file named ${id + '-' + imageName} in the folder tweets_media of your archive and move it in the img folder of this project. `)
+Workaround: find the file named ${id + '-' + imageName} in the folder tweets_media of your archive and move it in the media folder of this project. `)
 				return error
 			}
 		}
@@ -172,7 +172,7 @@ Workaround: find the file named ${id + '-' + imageName} in the folder tweets_med
 				tweet.extended_entities = { "media": [] }
 			}
 			if (QT?.extended_entities?.media) {
-				tweet.extended_entities.media.push(...QT.extended_entities.media)
+				tweet.extended_entities.media.push(...QT.extended_entities.media) // TODO : fix. pictures not published on Mastodon.
 			}
 			const fullQT = await this.getFullTweet(QT)
 			tweet.full_text = tweet.full_text + "\nQT ⬇️\n" + QT.full_text
