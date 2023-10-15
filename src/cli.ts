@@ -13,7 +13,7 @@ import { err } from './utils'
 export const params = parseParams()
 console.log("test")
 module.exports = {
-
+	a: "test"
 }
 
 async function () {

@@ -6,7 +6,7 @@ import { createRestAPIClient } from "masto"
 import { err } from './utils'
 import fs from "node:fs"
 import { Blob } from 'buffer'
-import { params } from '.'
+import { params } from './cli'
 const entities = require("entities")
 
 if (!process.env.URL) {

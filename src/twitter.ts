@@ -5,7 +5,7 @@ const merge = require('deepmerge')
 import fs from "fs"
 import fsp from "fs/promises"
 import { Tweet } from './types'
-import { params } from '.'
+import { params } from './cli'
 import { ELEVENTY_IMG_OPTIONS, err, isValidHttpUrl } from './utils'
 
 

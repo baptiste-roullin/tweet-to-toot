@@ -5,11 +5,11 @@
   "type": "commonjs",
   "description": "Export your Twitter archived threads to Mastodon",
   "bin": {
-    "totoot": "dist/index.js"
+    "totoot": "dist/cli.js"
   },
   "scripts": {
     "create-db": "node database/import-from-archive.js",
-    "dev": "npx ts-node ./src/index.ts "
+    "dev": "npx ts-node ./src/cli.ts "
   },
   "engines": {
     "node": ">=18.0.0 <20.0.0"
