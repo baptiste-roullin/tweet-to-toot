@@ -6,8 +6,8 @@ import { createRestAPIClient } from "masto"
 import { err } from './utils'
 import fs from "node:fs"
 import { Blob } from 'buffer'
-import { params } from './index'
-const entities = require("entities")
+import { params } from './cli'
+import entities from "entities"
 
 if (!process.env.URL) {
 	err("You must provide an instance URL")

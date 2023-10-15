@@ -2,12 +2,8 @@ import * as sqlite from 'sqlite3'
 import { Tweet } from './types'
 const sqlite3 = sqlite.verbose()
 
-if (process.env.NODE_ENV === "dev") {
-	var db = new sqlite3.Database("./database/test.db")
-}
-else {
-	var db = new sqlite3.Database("./database/tweet.db")
-}
+var db = new sqlite3.Database("./tweet.db")
+
 
 
 export default class DataSource {
@@ -42,15 +38,20 @@ export default class DataSource {
 			return null
 		}
 
-		return new Promise((resolve, reject) => {
-			db.get("SELECT * FROM tweets WHERE id_str = ?", { 1: id }, (err, row) => {
-				if (err) {
-					reject(err)
-				} else {
-					resolve(row ? this.normalizeTweetObject(row) : null)
-				}
+		try {
+			return new Promise((resolve, reject) => {
+
+				db.get("SELECT * FROM tweets WHERE id_str = ?", { 1: id }, (err, row) => {
+					if (err) {
+						reject(err)
+					} else {
+						resolve(row ? this.normalizeTweetObject(row) : null)
+					}
+				})
 			})
-		})
+		} catch (error) {
+
+		}
 	}
 
 	// takes a db row, returns the tweet json

@@ -17,13 +17,13 @@
 		"declaration": true, /* Generates corresponding '.d.ts' file. */
 		"declarationMap": true, /* Generates a sourcemap for each corresponding '.d.ts' file. */
 		"sourceMap": true, /* Generates corresponding '.map' file. */
-		// "outFile": "./",                       /* Concatenate and emit output to single file. */
+		"outDir": "./dist",
 		// "rootDir": "./",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
 		// "composite": true,                     /* Enable project compilation */
 		"incremental": true, /* Enable incremental compilation */
 		// "tsBuildInfoFile": "./",               /* Specify file to store incremental compilation information */
 		"removeComments": false, /* Do not emit comments to output. */
-		"noEmit": true /* Do not emit outputs. (BECAUSE WE'RE USING TS-NODE!) */,
+		"noEmit": false ,
 		"importHelpers": false, /* Import emit helpers from 'tslib'. */
 		// "downlevelIteration": true,            /* Provide full support for iterables in 'for-of', spread, and destructuring when targeting 'ES5' or 'ES3'. */
 		// "isolatedModules": true,               /* Transpile each file as a separate module (similar to 'ts.transpileModule'). */
@@ -63,10 +63,12 @@
 	"include": [
 		"./src/**/*.ts",
 		"./src/**/*.js",
+
 		"./src/config/config.ts",
 		"tsconfig.front.json"
 	],
 	"exclude": [
-		"./src/assets/scripts",
-	]
+		"./src/database/test_data.js",
+		"./src/database/tweets.js",
+		"./src/database/tweet.db",]
 }
