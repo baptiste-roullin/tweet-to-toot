@@ -1,11 +1,6 @@
 // CREDIT: https://github.com/tweetback/tweetback/
 import util from 'util'
-import fs from 'node:fs'
 
-import { streamArray } from 'stream-json/streamers/StreamArray'
-import { parser } from 'stream-json/parser'
-import { chain } from 'stream-chain'
-const { Writable } = require('node:stream')
 import * as sqlite3 from 'sqlite3'
 var db = new sqlite3.Database("./tweet.db")
 sqlite3.verbose()
@@ -20,14 +15,14 @@ db.serialize = util.promisify(db.serialize)
 db.run = util.promisify(db.run)
 
 
-async function tableExists(test) {
+export async function tableExists(test) {
   const tables = await db.all("select name from sqlite_master where type='table'") as unknown as Array<Record<string, any>>
   const check = tables.some(table => table.name === test)
   return check
 }
 
 // if the tweet does not exist in the DB, resolves a promise with the tweet ID
-async function checkInDatabase(tweet): Promise<Tweet | boolean> {
+export async function checkInDatabase(tweet): Promise<Tweet | boolean> {
   return new Promise(function (resolve, reject) {
     db.get("SELECT * FROM tweets WHERE id_str = ?", { 1: tweet.id }, function (err, row) {
       if (err) {
@@ -42,8 +37,7 @@ async function checkInDatabase(tweet): Promise<Tweet | boolean> {
 }
 
 
-
-async function saveToDatabaseApiV1(tweet) {
+export async function saveToDatabaseApiV1(tweet) {
   const API_VERSION = 1
   return new Promise(function (resolve, reject) {
     db.parallelize(function () {
@@ -64,7 +58,7 @@ async function saveToDatabaseApiV1(tweet) {
   })
 }
 
-function saveToDatabase(tweet, users, mediaObjects) {
+export function saveToDatabase(tweet, users, mediaObjects) {
   const API_VERSION = 2
 
   let replies = (tweet.referenced_tweets || []).filter(entry => entry.type === "replied_to")
@@ -108,7 +102,7 @@ function saveToDatabase(tweet, users, mediaObjects) {
   stmt.finalize()
 }
 
-function logTweetCount() {
+export function logTweetCount() {
 
   db.each("SELECT COUNT(*) AS count FROM tweets", function (err, row) {
     console.log("Finished count", row['count'])
@@ -116,44 +110,3 @@ function logTweetCount() {
   })
 }
 
-export async function importFromArchive() {
-  try {
-
-    const exists = await tableExists('tweets')
-    if (!exists) {
-      await db.run("CREATE TABLE IF NOT EXISTS tweets (id_str TEXT PRIMARY KEY ASC, created_at TEXT, in_reply_to_status_id_str TEXT, in_reply_to_screen_name TEXT, full_text TEXT, json TEXT, api_version TEXT, hidden INTEGER)")
-      const tweets = chain(
-        [fs.createReadStream('data/tweets.json'),
-        parser(),
-        streamArray(),
-        async function (item) {
-          let existingRecordsFound = 0
-          let missingTweets = 0
-          let { tweet } = item['value']
-
-          const record = await checkInDatabase(tweet)
-          if (record === false) {
-            existingRecordsFound++
-          } else {
-            missingTweets++
-            //console.log(tweet.id_str)
-            await saveToDatabaseApiV1(tweet)
-            //console.log({ existingRecordsFound, missingTweets })
-          }
-
-        }]
-      )
-      logTweetCount()
-      return tweets
-    } else {
-      console.log("table alreay exist")
-      logTweetCount()
-      return (new Writable()).end()
-    }
-
-
-  } catch (e) {
-    console.log("ERROR", e)
-  }
-
-}

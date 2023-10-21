@@ -2,12 +2,12 @@
 import { config } from 'dotenv'
 config()
 import timers from 'node:timers/promises'
-import { createRestAPIClient } from "masto"
-import { err } from './utils'
 import fs from "node:fs"
 import { Blob } from 'buffer'
+import { createRestAPIClient } from "masto"
+import { decodeHTML } from "entities"
+import { err } from './utils'
 import { params } from './cli'
-import entities from "entities"
 
 if (!process.env.URL) {
 	err("You must provide an instance URL")
@@ -46,7 +46,7 @@ async function publishToot(tweet, id = null) {
 
 	const status = await masto.v1.statuses.create({
 		mediaIds: attachmentIDs,
-		status: entities.decodeHTML(tweet.full_text),
+		status: decodeHTML(tweet.full_text),
 		visibility: "public",
 		inReplyToId: id || null,
 		language: params.lang || (tweet.lang === 'zxx' ? "" : tweet.lang) || ""

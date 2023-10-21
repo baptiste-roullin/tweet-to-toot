@@ -150,7 +150,7 @@ export default class Twitter {
 				tweet.extended_entities = { "media": [] }
 			}
 			if (QT?.extended_entities?.media) {
-				tweet.extended_entities.media.push(...QT.extended_entities.media) // TODO : fix. pictures not published on Mastodon.
+				tweet.extended_entities.media.push(...QT.extended_entities.media)
 			}
 			const fullQT = await this.getFullTweet(QT)
 			tweet.full_text = tweet.full_text + "\nQT ⬇️\n" + QT.full_text

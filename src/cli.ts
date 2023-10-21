@@ -3,7 +3,7 @@ import { publishMastoThread } from './masto'
 import { parseParams } from './parseParams'
 import Twitter from './twitter'
 import { err } from './utils'
-import { importFromArchive } from './database/tweet-to-db'
+import { importFromArchive } from './database/importFromArchive'
 
 export const params = parseParams();
 
@@ -32,7 +32,7 @@ export const params = parseParams();
 		const { thread } = await twitter.startThread(id)
 		console.log(`thread of ${thread.length} messages, about ${thread[0].full_text.slice(0, 50)}...`)
 
-		if (params['dry-run']) {
+		if (params.dryRun) {
 			thread.forEach(el => {
 				console.log(`
 ${el.date}

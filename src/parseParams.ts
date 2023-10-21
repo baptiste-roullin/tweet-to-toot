@@ -12,19 +12,20 @@ export function parseParams() {
 				msg: 'You must provide or several ID, in the form --id=number,number',
 				type: 'array'
 			},
-			'dry-run': {
-				alias: 'd',
-				describe: 'Show thread without publishing it',
-				demandOption: false,
-				msg: '',
-				type: 'boolean'
-			},
 			'wait': {
 				alias: 'w',
 				describe: 'delay between each post, in seconds',
 				demandOption: false,
 				type: 'number',
 				default: 1
+			},
+			'dry-run': {
+				alias: 'd',
+				describe: 'Show thread without publishing it',
+				demandOption: false,
+				msg: '',
+				type: 'boolean',
+				default: false
 			},
 			'concatWith': {
 				describe: 'Optional Mastodon message id. If provided, the thread will be messageed as a continuation of this message. Useful if you want merge threads.',
@@ -52,7 +53,7 @@ export function parseParams() {
 				type: 'string',
 			}
 		})
-		.parseSync() // parse() typings are more complex.
+		.parseSync() // parse() typings are way too complex.
 
 
 

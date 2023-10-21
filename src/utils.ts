@@ -1,7 +1,10 @@
+import fsp from 'node:fs/promises'
+
 export function err(msg) {
 	Error.stackTraceLimit = 0
 	throw new Error(msg)
 }
+
 
 export function isValidHttpUrl(string) {
 	let url
@@ -22,5 +25,14 @@ export const ELEVENTY_IMG_OPTIONS = {
 	cacheDuration: "*",
 	filenameFormat: function (id, src, width, format, options) {
 		return `${id}.${format}`
+	}
+}
+
+export async function exists(path) {
+	try {
+		await fsp.access(path)
+		return true
+	} catch {
+		return false
 	}
 }

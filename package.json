@@ -34,6 +34,7 @@
     "deepmerge": "^4.3.1",
     "dotenv": "^16.3.1",
     "masto": "^6.2.0",
+    "replace-in-file": "^7.0.1",
     "sqlite3": "^5.1.4",
     "stream-json": "^1.8.0",
     "yargs": "^17.7.2"
