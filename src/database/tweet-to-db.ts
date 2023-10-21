@@ -105,7 +105,11 @@ export function saveToDatabase(tweet, users, mediaObjects) {
 export function logTweetCount() {
 
   db.each("SELECT COUNT(*) AS count FROM tweets", function (err, row) {
-    console.log("Finished count", row['count'])
+    if (row) { console.log("Finished count", row['count']) }
+    if (err) {
+      console.log(err)
+
+    }
 
   })
 }

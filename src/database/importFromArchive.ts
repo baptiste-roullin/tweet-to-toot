@@ -28,7 +28,7 @@ export async function importFromArchive() {
 
 			await replaceInFile({
 				files: normalize(join(folder, 'tweets.json')),
-				from: 'window.YTD.tweet.part0 = [',
+				from: 'window.YTD.tweets.part0 = [',
 				to: '[',
 			})
 		}
@@ -60,7 +60,7 @@ export async function importFromArchive() {
 			return tweets
 		} else {
 			console.log("table alreay exist")
-			logTweetCount()
+			//logTweetCount()
 			return (new Writable()).end()
 		}
 
