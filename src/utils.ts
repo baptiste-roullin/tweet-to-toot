@@ -16,7 +16,6 @@ export function isValidHttpUrl(string) {
 	}
 }
 
-
 export const ELEVENTY_IMG_OPTIONS = {
 	widths: [null],
 	formats: ["jpeg"],

@@ -1,39 +1,42 @@
 import fs from 'node:fs'
 import fsp from 'node:fs/promises'
 import { Writable } from 'node:stream'
+import { join, normalize } from 'node:path'
 
 import { replaceInFile } from 'replace-in-file'
 import { streamArray } from 'stream-json/streamers/StreamArray'
 import { parser } from 'stream-json/parser'
 import { chain } from 'stream-chain'
-import { exists } from '../utils'
-import { checkInDatabase, logTweetCount, saveToDatabaseApiV1, tableExists } from './tweet-to-db'
 
 import * as sqlite3 from 'sqlite3'
 var db = new sqlite3.Database("./tweet.db")
 sqlite3.verbose()
 
+import { exists } from '../utils'
+import { checkInDatabase, logTweetCount, saveToDatabaseApiV1, tableExists } from './tweet-to-db'
+
 export async function importFromArchive() {
 	try {
+		const folder = join(process.cwd(), "data")
+		const destinationFile = join(folder, 'tweets.json')
+		if (await exists(destinationFile)) {
+			console.log('JSON file already exists')
+		}
+		else {
+			await fsp.copyFile(join(folder, 'tweets.js'), destinationFile)
+			console.log(await exists(join(folder, 'tweets.json')))
 
-		const file = "data/tweets_media/tweets.json'"
-		if (!exists(process.cwd() + 'data/tweets_media/tweets.json')) {
-			fsp.copyFile('data/tweets_media/tweets.js', file)
-			const results = await replaceInFile({
-				files: file,
+			await replaceInFile({
+				files: normalize(join(folder, 'tweets.json')),
 				from: 'window.YTD.tweet.part0 = [',
 				to: '[',
 			})
-		}
-		else {
-			console.log('JSON file already exisss')
-
 		}
 
 		if (!(await tableExists('tweets'))) {
 			await db.run("CREATE TABLE IF NOT EXISTS tweets (id_str TEXT PRIMARY KEY ASC, created_at TEXT, in_reply_to_status_id_str TEXT, in_reply_to_screen_name TEXT, full_text TEXT, json TEXT, api_version TEXT, hidden INTEGER)")
 			const tweets = chain(
-				[fs.createReadStream('data/tweets.json'),
+				[fs.createReadStream(destinationFile),
 				parser(),
 				streamArray(),
 				async function (item) {

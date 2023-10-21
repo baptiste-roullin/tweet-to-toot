@@ -8,7 +8,8 @@
     "totoot": "dist/cli.js"
   },
   "scripts": {
-    "dev": "npx ts-node ./src/cli.ts --ids 1322705852017659911"
+    "dev": "npx ts-node ./src/cli.ts --ids 1322705852017659911",
+    "build": "npx tsc"
   },
   "engines": {
     "node": ">=18.0.0 <20.0.0"
