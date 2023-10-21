@@ -1,12 +1,12 @@
 import DataSource from "./DataSource"
-const eleventyImg = require("@11ty/eleventy-img")
-const eleventyFetch = require("@11ty/eleventy-fetch")
-const merge = require('deepmerge')
+import eleventyImg from "@11ty/eleventy-img"
+import eleventyFetch from "@11ty/eleventy-fetch"
+import merge from 'deepmerge'
 import fs from "fs"
 import fsp from "fs/promises"
 import { Tweet } from './types'
 import { params } from './cli'
-import { ELEVENTY_IMG_OPTIONS, err, isValidHttpUrl } from './utils'
+import { ELEVENTY_IMG_OPTIONS } from './utils'
 
 
 const dataSource = new DataSource()
@@ -104,7 +104,7 @@ export default class Twitter {
 						}
 
 						let remoteVideoUrl = videoResults[0].url
-						let videoUrl = `video/${tweet.id}.mp4`
+						let videoUrl = `media/${tweet.id}.mp4`
 						const finalPath = await this.getVideo(remoteVideoUrl, './' + videoUrl, tweet.id_str)
 						local_media.push({ path: finalPath })
 
@@ -116,8 +116,6 @@ export default class Twitter {
 		return { local_media, textReplacements }
 
 	}
-
-
 
 
 	async getFullTweet(tweet: Tweet): Promise<Tweet> {

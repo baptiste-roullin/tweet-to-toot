@@ -1,14 +1,9 @@
 #!/usr/bin/env node
-
-//TODO : create bin.ts, add it to package.json
-//  add "main": "./lib/index.js",
-// add dev script with TS-node ?
-//TODO : merge create-db and publish. add test of db existence.
-
 import { publishMastoThread } from './masto'
 import { parseParams } from './parseParams'
 import Twitter from './twitter'
 import { err } from './utils'
+import { importFromArchive } from './database/tweet-to-db'
 
 export const params = parseParams()
 console.log("test")
@@ -16,25 +11,7 @@ module.exports = {
 	a: "test"
 }
 
-async function () {
-	console.log("test")
-
-	async function generateThread(id: string) {
-		const twitter = new Twitter()
-		const { thread } = await twitter.startThread(id)
-		console.log(`thread of ${thread.length} messages, about ${thread[0].full_text.slice(0, 50)}...`)
-
-		if (params['dry-run']) {
-			thread.forEach(el => {
-				console.log(`
-${el.date}
-${el.full_text}
-====================`)
-			})
-		}
-		else { await publishMastoThread(thread) }
-	}
-
+async function launch() {
 	const ids = params.ids as string[]
 
 	if (ids.length > 1) {
@@ -45,12 +22,31 @@ ${el.full_text}
 			err("The concatWith parameter can be used when you provide only sone thread ID ")
 		}
 		await Promise.all(ids.map(id => generateThread(id)))
-
 	}
 	else {
 
 		await generateThread(ids[0])
 	}
-
 }
+
+async function generateThread(id: string) {
+	const twitter = new Twitter()
+	const { thread } = await twitter.startThread(id)
+	console.log(`thread of ${thread.length} messages, about ${thread[0].full_text.slice(0, 50)}...`)
+
+	if (params['dry-run']) {
+		thread.forEach(el => {
+			console.log(`
+${el.date}
+${el.full_text}
+====================`)
+		})
+	}
+	else { await publishMastoThread(thread) }
+}
+
+(await importFromArchive()).on('finish', launch)
+
+
+}) ()
 

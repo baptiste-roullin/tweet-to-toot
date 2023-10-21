@@ -26,7 +26,7 @@ export function parseParams() {
 				type: 'number',
 				default: 1
 			},
-			'concatWith': { //TODO implémenter
+			'concatWith': {
 				describe: 'Optional Mastodon message id. If provided, the thread will be messageed as a continuation of this message. Useful if you want merge threads.',
 				alias: 'c',
 				demandOption: false,

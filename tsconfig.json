@@ -63,10 +63,12 @@
 	"include": [
 		"./src/**/*.ts",
 		"./src/**/*.js",
+
 		"./src/config/config.ts",
 		"tsconfig.front.json"
 	],
 	"exclude": [
-		"./src/assets/scripts",
-	]
+		"./src/database/test_data.js",
+		"./src/database/tweets.js",
+		"./src/database/tweet.db",]
 }

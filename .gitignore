@@ -3,10 +3,11 @@ node_modules/
 _site
 .env
 .DS_Store
-tweet.db
-tweets.json
-tweets.js
+**/tweet.db
+**/tweets.json
+**/tweets.js
 img/
 video/
 media/
 dist
+data/tweets_media/

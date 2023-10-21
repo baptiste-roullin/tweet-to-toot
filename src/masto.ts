@@ -7,7 +7,7 @@ import { err } from './utils'
 import fs from "node:fs"
 import { Blob } from 'buffer'
 import { params } from './cli'
-const entities = require("entities")
+import entities from "entities"
 
 if (!process.env.URL) {
 	err("You must provide an instance URL")
