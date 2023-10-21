@@ -17,6 +17,10 @@ import { checkInDatabase, logTweetCount, saveToDatabaseApiV1, tableExists } from
 
 export async function importFromArchive() {
 	try {
+
+		//glob package need forward path
+		//const cwd = process.cwd().replace(/\\/g, '/')
+
 		const folder = join(process.cwd(), "data")
 		const destinationFile = join(folder, 'tweets.json')
 		if (await exists(destinationFile)) {
@@ -26,11 +30,14 @@ export async function importFromArchive() {
 			await fsp.copyFile(join(folder, 'tweets.js'), destinationFile)
 			console.log(await exists(join(folder, 'tweets.json')))
 
-			await replaceInFile({
+			const replace = await replaceInFile({
 				files: normalize(join(folder, 'tweets.json')),
 				from: 'window.YTD.tweet.part0 = [',
 				to: '[',
+				disableGlobs: true,
 			})
+			console.log(replace)
+
 		}
 
 		if (!(await tableExists('tweets'))) {
