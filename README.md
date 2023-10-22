@@ -9,13 +9,10 @@ Under the hood is a heavy fork of [Tweetback](https://github.com/tweetback/tweet
 
 it works with pictures and videos. It even flattens branching threads (meaning: if you replied several times to the same tweet, all replies with be inserted in the main thread.)
 
-## Required
-
-Node v18 or 19. NVM advised if it's not your typical Node environnment.
-
 ## Setup
 
 
+- Install [Node LTS](https://nodejs.org/en), v18 or 19. NVM advised if it's not your typical Node environnment.
 - In your terminal, go to the folder of the project.
 - Run `npm install tweet-to-toot`.
 - Grab a Mastodon API token by following [these instructions](https://neet.github.io/masto.js/#md:quick-start).
@@ -27,7 +24,7 @@ Node v18 or 19. NVM advised if it's not your typical Node environnment.
 
 Full examples:
 
-- `npx tweet-to-toot --ids 1157670494390378498 --intro="imported thread, started in 2019 on the Other Site" --dry-run`
+- `npx tweet-to-toot --ids 1157670494390378498 --intro "imported thread, started in 2019 on the Other Site" --dry-run`
 
 - `npx tweet-to-toot --ids 1157670494390378498 791709895083102209 --wait 10 --lang en`
 
