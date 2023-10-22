@@ -8,6 +8,7 @@ import { createRestAPIClient } from "masto"
 import { decodeHTML } from "entities"
 import { err } from './utils'
 import { params } from './cli'
+import { Tweet } from './types'
 
 if (!process.env.URL) {
 	err("You must provide an instance URL")
@@ -20,28 +21,30 @@ const masto = createRestAPIClient({
 	accessToken: process.env.TOKEN
 })
 
-async function publishToot(tweet, id = null) {
+
+async function prepareMedia(tweet): Promise<string[]> {
+	const attachments = await Promise.all(
+		tweet.local_media.filter(image => image !== undefined).map(async image => {
+			try {
+				const file = fs.readFileSync(image.path)
+				return masto.v2.media.create({
+					file: new Blob([file]),
+					description: image?.alt || "",
+				})
+			} catch (error) {
+				console.log(error)
+			}
+		})
+	)
+	return attachments.map(attach => attach.id)
+}
+
+async function publishToot(tweet: Tweet, id = null) {
 	if (tweet.local_media.length > 0) {
-		const attachments = await Promise.all(
-
-			tweet.local_media.filter(image => image !== undefined).map(async image => {
-				try {
-					const file = fs.readFileSync(image.path)
-					return masto.v2.media.create({
-						file: new Blob([file]),
-						description: image?.alt || "",
-					})
-
-				} catch (error) {
-					console.log(error)
-
-				}
-			})
-		)
-		var attachmentIDs = attachments.map(attach => attach.id)
+		var attachmentIDs = await prepareMedia(tweet)
 	}
 	else {
-		attachmentIDs = []
+		var attachmentIDs = [""]
 	}
 
 	const status = await masto.v1.statuses.create({
@@ -50,13 +53,11 @@ async function publishToot(tweet, id = null) {
 		visibility: "public",
 		inReplyToId: id || null,
 		language: params.lang || (tweet.lang === 'zxx' ? "" : tweet.lang) || ""
-
 	})
 	return status
-
 }
 
-export async function publishMastoThread(thread) {
+export async function publishMastoThread(thread: Tweet[]) {
 	let nextID = ""
 	let publishedURL = ""
 

@@ -43,6 +43,7 @@ export default class DataSource {
 
 				db.get("SELECT * FROM tweets WHERE id_str = ?", { 1: id }, (err, row) => {
 					if (err) {
+						console.log("no tweet with this is ID")
 						reject(err)
 					} else {
 						resolve(row ? this.normalizeTweetObject(row) : null)
@@ -50,7 +51,7 @@ export default class DataSource {
 				})
 			})
 		} catch (error) {
-			console.log("no tweet with this is")
+			console.log("no tweet with this is ID")
 
 		}
 	}

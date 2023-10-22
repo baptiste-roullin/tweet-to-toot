@@ -3,8 +3,6 @@ import * as sqlite3 from 'sqlite3'
 var db = new sqlite3.Database("./tweet.db")
 sqlite3.verbose()
 
-
-
 import getDateString from "./getDateString"
 import { Tweet } from '../types'
 import util from 'util'
@@ -43,7 +41,7 @@ export async function checkInDatabase(tweet): Promise<Tweet | boolean> {
 }
 
 
-export async function saveToDatabaseApiV1(tweet) {
+export async function saveToDatabase(tweet): Promise<sqlite3.Database> {
   const API_VERSION = 1
   return new Promise(function (resolve, reject) {
     db.parallelize(function () {
@@ -64,67 +62,8 @@ export async function saveToDatabaseApiV1(tweet) {
   })
 }
 
-export function saveToDatabase(tweet, users, mediaObjects) {
-  const API_VERSION = 2
 
-  let replies = (tweet.referenced_tweets || []).filter(entry => entry.type === "replied_to")
-  let replyTweetId = replies.length ? replies[0].id : null
-
-  let userEntry = users.filter(entry => entry.id === tweet.in_reply_to_user_id)
-  let replyScreenName = userEntry.length ? userEntry[0].username : null
-
-  // We need to normalize the mediaObjects into each row, the Twitter API has them separated out
-  if (tweet.attachments && tweet.attachments.media_keys) {
-    tweet.extended_entities = {
-      media: []
-    }
-
-    for (let key of tweet.attachments.media_keys) {
-      let [media] = mediaObjects.filter(entry => entry.media_key === key)
-      if (media) {
-        // aliases for v1
-        if (media.type === "video") { // video
-          media.media_url_https = media.preview_image_url
-          media.video_info = {
-            variants: [
-              {
-                url: media.url
-              }
-            ]
-          }
-        } else {
-          media.media_url_https = media.url
-        }
-
-        tweet.extended_entities.media.push(media)
-      } else {
-        throw new Error(`Media object not found for media key ${key} on tweet ${tweet.id}`)
-      }
-    }
-  }
-
-  let stmt = db.prepare("INSERT INTO tweets VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
-  stmt.run(tweet.id, getDateString(tweet.created_at), replyTweetId, replyScreenName, tweet.text, JSON.stringify(tweet), API_VERSION, "")
-  stmt.finalize()
-}
-
-/*export function tweetCount(): Promise<Error | number> {
-  return new Promise(function (resolve, reject) {
-    db.each("SELECT COUNT(*) AS count FROM tweets",
-      function () { }), // useless callback with all row info
-      function (err, count) {
-        if (err) {
-          reject(err)
-        }
-        else if (count)
-          resolve(count)
-      }
-  })
-
-}
-*/
-
-export async function tweetCount() {
+export async function tweetCount(): Promise<Error | number> {
   //@ts-ignore
   const { err, count } = await db.each("SELECT COUNT(*) AS count FROM tweets")
   if (err) {

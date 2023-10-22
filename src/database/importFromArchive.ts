@@ -12,17 +12,17 @@ import * as sqlite3 from 'sqlite3'
 var db = new sqlite3.Database("./tweet.db")
 sqlite3.verbose()
 
-import { exists, info } from '../utils'
-import { checkInDatabase, createTable, tweetCount, saveToDatabaseApiV1, tableExists } from './tweet-to-db'
+import { fileExists, info } from '../utils'
+import { checkInDatabase, createTable, tweetCount, saveToDatabase, tableExists } from './tweet-to-db'
 
 export async function importFromArchive() {
 
-	// transform a JS with a window global object into a JSON file.
+	// transform a JS file with a window global object into a JSON file.
 	//name : name of the file, without extension
-	async function JSONify(path, name) {
+	async function JSONify(path: string, name: string) {
 		const folder = join(process.cwd(), path)
 		const destinationFile = join(folder, name + '.json')
-		if (await exists(destinationFile)) {
+		if (await fileExists(destinationFile)) {
 			info('JSON file already exists')
 		}
 		else {
@@ -40,7 +40,7 @@ export async function importFromArchive() {
 	async function areTweetsMissing() {
 		await JSONify("data", "manifest")
 		const path = './data/manifest.js'
-		if (await exists(path)) {
+		if (await fileExists(path)) {
 			const manifest = require(join(process.cwd(), "./data/manifest.json"))
 			var archiveTweetCount = manifest.dataTypes.tweets.files[0].count
 		}
@@ -76,7 +76,7 @@ export async function importFromArchive() {
 						existingRecordsFound++
 					} else {
 						missingTweets++
-						await saveToDatabaseApiV1(tweet)
+						await saveToDatabase(tweet)
 						//console.log({ existingRecordsFound, missingTweets })
 					}
 				}]
@@ -85,6 +85,7 @@ export async function importFromArchive() {
 		}
 		else {
 			info('no tweets missing')
+			//Dummy stream just so the return type can always be a stream.
 			return (new Writable()).end()
 
 		}

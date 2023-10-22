@@ -4,8 +4,10 @@ import eleventyFetch from "@11ty/eleventy-fetch"
 import fsp from "fs/promises"
 import { Tweet } from './types'
 import { params } from './cli'
-import { ELEVENTY_IMG_OPTIONS, exists } from './utils'
+import { ELEVENTY_IMG_OPTIONS, fileExists } from './utils'
 import { join } from 'path'
+
+//TODO : when Eleventy 3.0.0, it will fully ESM-compatible. We will be able to make the project ESM only.
 
 
 const dataSource = new DataSource()
@@ -18,7 +20,7 @@ export default class Twitter {
 			const imageName = remoteImageUrl.match(/media\/(.*\.(png|jpg|jpeg))$/)[1]
 			const localPath = join(process.cwd(), ELEVENTY_IMG_OPTIONS.outputDir, id + '-' + imageName)
 
-			if (await exists(localPath)) {
+			if (await fileExists(localPath)) {
 				return { path: localPath, alt }
 			}
 			else {
@@ -28,25 +30,22 @@ export default class Twitter {
 			}
 		} catch (error) {
 			console.log(error)
-
 		}
-
 	}
 
 
-	async getVideo(remoteVideoUrl, localVideoPath, id) {
-
+	async getVideo(remoteVideoUrl: string, localVideoPath: string, id: string) {
 		try {
 			const videoName = remoteVideoUrl.match(/\/vid\/.*\/(.*\.mp4).*$/)[1]
 			const localPath = join(process.cwd(), ELEVENTY_IMG_OPTIONS.outputDir, id + '-' + videoName)
 
-			if (await exists(localPath)) {
+			if (await fileExists(localPath)) {
 				return localPath
 			}
 			else {
 				let videoBuffer = await eleventyFetch(remoteVideoUrl)
 
-				if (!(await exists(localVideoPath))) {
+				if (!(await fileExists(localVideoPath))) {
 					await fsp.writeFile(localVideoPath, videoBuffer)
 				}
 			}
@@ -106,12 +105,10 @@ export default class Twitter {
 						let videoUrl = `media/${tweet.id}.mp4`
 						const finalPath = await this.getVideo(remoteVideoUrl, './' + videoUrl, tweet.id_str)
 						local_media.push({ path: finalPath })
-
 					}
 				}
 			}
 		}
-
 		return { local_media, textReplacements }
 
 	}
@@ -135,7 +132,6 @@ export default class Twitter {
 
 	async mergeQT(tweet: Tweet, userName: string): Promise<Tweet> {
 
-		//TODO : remove picture URL
 		const userNameMatcher = new RegExp("https\:\/\/twitter\.com\/" + userName + "/status/")
 
 		const urlOfQT = tweet.entities.urls.find(url => url.expanded_url.match(userNameMatcher))

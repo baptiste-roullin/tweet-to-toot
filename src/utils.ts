@@ -12,7 +12,7 @@ export function err(msg) {
 }
 
 
-export function isValidHttpUrl(string) {
+export function isValidHttpUrl(string: string) {
 	let url
 	try {
 		url = new URL(string)
@@ -33,7 +33,7 @@ export const ELEVENTY_IMG_OPTIONS = {
 	}
 }
 
-export async function exists(path) {
+export async function fileExists(path) {
 	try {
 		await fsp.access(path)
 		return true

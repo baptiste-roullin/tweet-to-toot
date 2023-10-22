@@ -8,7 +8,7 @@
     "totoot": "dist/cli.js"
   },
   "scripts": {
-    "dev": "npx ts-node ./src/cli.ts --ids 1322705852017659911",
+    "dev": "cross-env DEBUG=info npx ts-node ./src/cli.ts",
     "build": "npx tsc"
   },
   "engines": {
@@ -32,6 +32,7 @@
     "@11ty/eleventy-fetch": "^3.0.0",
     "@11ty/eleventy-img": "^3.1.1",
     "@types/stream-json": "^1.7.5",
+    "cross-env": "^7.0.3",
     "debug": "^4.3.4",
     "deepmerge": "^4.3.1",
     "dotenv": "^16.3.1",

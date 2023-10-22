@@ -7,7 +7,6 @@ import { importFromArchive } from './database/importFromArchive'
 
 export const params = parseParams();
 
-
 (async function () {
 
 	async function generateThread(id: string) {
@@ -31,15 +30,14 @@ ${el.full_text}
 
 		if (ids.length > 1) {
 			if (params.intro) {
-				err("The intro parameter can be used when you provide only sone thread ID ")
+				err("The intro parameter can be used when you provide only sone thread ID")
 			}
 			if (params.concatWith) {
-				err("The concatWith parameter can be used when you provide only sone thread ID ")
+				err("The concatWith parameter can be used when you provide only sone thread ID")
 			}
 			await Promise.all(ids.map(id => generateThread(id)))
 		}
 		else {
-
 			await generateThread(ids[0])
 		}
 	}
