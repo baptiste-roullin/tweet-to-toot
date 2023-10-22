@@ -135,7 +135,7 @@ export default class Twitter {
 
 	async mergeQT(tweet: Tweet, userName: string): Promise<Tweet> {
 
-
+		//TODO : remove picture URL
 		const userNameMatcher = new RegExp("https\:\/\/twitter\.com\/" + userName + "/status/")
 
 		const urlOfQT = tweet.entities.urls.find(url => url.expanded_url.match(userNameMatcher))

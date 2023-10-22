@@ -1,0 +1,12 @@
+node_modules/
+.cache
+_site
+.DS_Store
+**/tweet.db
+**/tweets.json
+**/tweets.js
+img/
+video/
+media/
+data/
+github/

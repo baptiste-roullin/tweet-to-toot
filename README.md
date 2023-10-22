@@ -1,6 +1,5 @@
 # Tweet To Toot – export your Twitter threads to Mastodon
 
-⚠️ **THIS IS A BETA VERSION** ⚠️
 
 You want to break free of the site formerly known as Twitter but do not want to lose your numerous, ongoing, carefully maintained, years-long threads?
 
@@ -16,23 +15,21 @@ Node v18 or 19. NVM advised if it's not your typical Node environnment.
 
 ## Setup
 
-- Clone or [download](https://github.com/baptiste-roullin/tweet-to-toot/releases/latest) this repository.
+
 - In your terminal, go to the folder of the project.
-- Run `npm install`.
-- Copy `./data/tweets.js` from your Twitter archive zip file into the `./database`. directory of this project.
-- In the file `tweets.js`, rename `window.YTD.tweets.part0` to `module.exports`.
-- Run `npm run create-db`.
+- Run `npm install tweet-to-toot`.
 - Grab a Mastodon API token by following [these instructions](https://neet.github.io/masto.js/#md:quick-start).
 - Add the token and the URL of you instance as environnment variables, for instance in a file named `.env` (no extension) at the root of your project.
-- *Optional (see caveats)*:	Move all the content from the folder `tweets_media` of your archive to the `media` folder of this project.
 
 ## Usage
 
-Examples:
+`npx tweet-to-toot --ids 0000000000 [optional parameters]`
 
-- `npm run publish -- --ids 1157670494390378498 --intro="imported thread, started in 2019 on the Other Site" --dry-run`
+Full examples:
 
-- `npm run publish -- --ids 1157670494390378498 1157670494390378498 --wait 10 --lang en`
+- `npx tweet-to-toot --ids 1157670494390378498 --intro="imported thread, started in 2019 on the Other Site" --dry-run`
+
+- `npx tweet-to-toot --ids 1157670494390378498 791709895083102209 --wait 10 --lang en`
 
 
 ## Parameters
@@ -63,4 +60,4 @@ Note on languages:
 	- Or request a fresh export.
 - Twitter can show threads with deleted messages in the middle. We can't. Workaround: Use it twice and the second time specifiy a `concatWith` option.
 - Use `wait` generously. Because Mastodon default rate limits can be quickly reached with media. And of course because of general respect to instance maintainers.
-- As Mastodon doesn't officially support a way for instances to customize a limit to message length, this tool assumes a default length of 500 caracters. When used with the `--merge` parameter, it can result in truncated messages.
+- Mastodon doesn't officially support a way for instances to customize a limit to message length. So this tool assumes a default length of 500 caracters. When used with the `--merge` parameter, it can result in truncated messages.
