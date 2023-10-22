@@ -29,4 +29,4 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npx tsc
-    - run: npx cross-env DEBUG=info npm run dev --ids 1384527253367894016 1705971523318636726  -m --wait 20
+    - run: npx cross-env DEBUG=info npm run dev -- --ids 1384527253367894016 1705971523318636726  -m --wait 20
