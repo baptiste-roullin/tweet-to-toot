@@ -28,4 +28,5 @@ jobs:
         node-version: 18.x
         cache: 'npm'
     - run: npm ci
-    - run: cross-env DEBUG=info totoot --ids 1384527253367894016 1705971523318636726  -m --wait 20
+    - run: npx tsc
+    - run: cross-env DEBUG=info npx run dev --ids 1384527253367894016 1705971523318636726  -m --wait 20
