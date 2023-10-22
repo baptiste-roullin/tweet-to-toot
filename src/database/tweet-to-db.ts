@@ -1,19 +1,21 @@
-// CREDIT: https://github.com/tweetback/tweetback/
-import util from 'util'
-
+// INITIAL CREDIT: https://github.com/tweetback/tweetback/
 import * as sqlite3 from 'sqlite3'
 var db = new sqlite3.Database("./tweet.db")
 sqlite3.verbose()
 
+
+
 import getDateString from "./getDateString"
 import { Tweet } from '../types'
+import util from 'util'
 
 //@ts-ignore
 db.all = util.promisify(db.all)
 db.serialize = util.promisify(db.serialize)
 //@ts-ignore
 db.run = util.promisify(db.run)
-
+//@ts-ignore
+//db.each = util.promisify(db.each)
 
 export async function tableExists(test) {
   const tables = await db.all("select name from sqlite_master where type='table'") as unknown as Array<Record<string, any>>
@@ -102,15 +104,18 @@ export function saveToDatabase(tweet, users, mediaObjects) {
   stmt.finalize()
 }
 
-export function logTweetCount() {
-
-  db.each("SELECT COUNT(*) AS count FROM tweets", function (err, row) {
-    if (row) { console.log("Finished count", row['count']) }
-    if (err) {
-      console.log(err)
-
-    }
-
+export function tweetCount(): Promise<Error | number> {
+  return new Promise(function (resolve, reject) {
+    db.each("SELECT COUNT(*) AS count FROM tweets",
+      function () { }), // useless callback with all row info
+      function (err, count) {
+        if (err) {
+          reject(err)
+        }
+        else if (count)
+          resolve(count)
+      }
   })
+
 }
 

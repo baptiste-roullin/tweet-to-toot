@@ -1,5 +1,11 @@
 import fsp from 'node:fs/promises'
 
+import debug from 'debug'
+
+export const error = debug('threader:error')
+export const warning = debug('threader:warning')
+export const info = debug('threader:info')
+
 export function err(msg) {
 	Error.stackTraceLimit = 0
 	throw new Error(msg)

@@ -1,7 +1,7 @@
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 yargs(hideBin(process.argv))
-import { err } from './utils'
+import { err, info } from './utils'
 
 export function parseParams() {
 	const params = yargs(hideBin(process.argv))
@@ -62,7 +62,7 @@ export function parseParams() {
 			err(`${id}: this string does not seem to be a proper id`)
 		}
 	})
-	console.log(`Finding ${params.ids.length} threads`)
+	info(`Finding ${params.ids.length} threads`)
 
 	return params
 

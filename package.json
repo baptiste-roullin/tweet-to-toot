@@ -32,6 +32,7 @@
     "@11ty/eleventy-fetch": "^3.0.0",
     "@11ty/eleventy-img": "^3.1.1",
     "@types/stream-json": "^1.7.5",
+    "debug": "^4.3.4",
     "deepmerge": "^4.3.1",
     "dotenv": "^16.3.1",
     "masto": "^6.2.0",
