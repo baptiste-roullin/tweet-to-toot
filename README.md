@@ -59,5 +59,5 @@ Note on languages:
 	- Move all the content from the folder `tweets_media` of your archive to the `media` folder of this project.
 	- Or request a fresh export.
 - Twitter can show threads with deleted messages in the middle. We can't. Workaround: Use it twice and the second time specifiy a `concatWith` option.
-- Use `wait` generously. Because Mastodon default rate limits can be quickly reached with media. And of course because of general respect to instance maintainers.
+- Use `wait` generously. With media, the default rate limit of your instance can be quickly reached.
 - Mastodon doesn't officially support a way for instances to customize a limit to message length. So this tool assumes a default length of 500 caracters. When used with the `--merge` parameter, it can result in truncated messages.
