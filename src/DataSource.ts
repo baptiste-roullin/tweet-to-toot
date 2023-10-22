@@ -50,6 +50,7 @@ export default class DataSource {
 				})
 			})
 		} catch (error) {
+			console.log("no tweet with this is")
 
 		}
 	}

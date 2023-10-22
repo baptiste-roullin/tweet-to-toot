@@ -13,47 +13,57 @@ var db = new sqlite3.Database("./tweet.db")
 sqlite3.verbose()
 
 import { exists, info } from '../utils'
-import { checkInDatabase, tweetCount, saveToDatabaseApiV1, tableExists } from './tweet-to-db'
+import { checkInDatabase, createTable, tweetCount, saveToDatabaseApiV1, tableExists } from './tweet-to-db'
 
 export async function importFromArchive() {
-	try {
 
-		// transform a JS with a window global object into a JSON file.
-		//name : name of the file, without extension
-		async function JSONify(path, name) {
-			const folder = join(process.cwd(), path)
-			const destinationFile = join(folder, name + '.json')
-			if (await exists(destinationFile)) {
-				info('JSON file already exists')
-			}
-			else {
-				await fsp.copyFile(join(folder, name + '.js'), destinationFile)
-
-				await replaceInFile({
-					files: normalize(destinationFile),
-					from: 'window.YTD.tweets.part0 = [',
-					to: '[',
-				})
-			}
+	// transform a JS with a window global object into a JSON file.
+	//name : name of the file, without extension
+	async function JSONify(path, name) {
+		const folder = join(process.cwd(), path)
+		const destinationFile = join(folder, name + '.json')
+		if (await exists(destinationFile)) {
+			info('JSON file already exists')
 		}
+		else {
+			await fsp.copyFile(join(folder, name + '.js'), destinationFile)
+			await replaceInFile({
+				files: normalize(destinationFile),
+				from: /^window\..*\s=\s(\[|\{)/,
+				to: '$1',
+				// Disabling glob, otherwise Windows backward slashes messes the path because of the glob package.
+				disableGlobs: true,
+			})
+		}
+	}
 
-		await JSONify("data", "tweets")
-
-
-
+	async function areTweetsMissing() {
+		await JSONify("data", "manifest")
 		const path = './data/manifest.js'
 		if (await exists(path)) {
-			const manifest = require(join(process.cwd(), path))
-			var archiveTweetCount = manifest.window['__THAR_CONFIG'].tweets[0].files.count
+			const manifest = require(join(process.cwd(), "./data/manifest.json"))
+			var archiveTweetCount = manifest.dataTypes.tweets.files[0].count
 		}
 		const dbTweetCount = await tweetCount() as number
 
-		// edited tweets will inflate the count, so we add a arbitrary number to compensate.
-		const areTweetsMissing = (archiveTweetCount > dbTweetCount + 100)
-		if (!(await tableExists('tweets')) || areTweetsMissing) {
-			await db.run("CREATE TABLE IF NOT EXISTS tweets (id_str TEXT PRIMARY KEY ASC, created_at TEXT, in_reply_to_status_id_str TEXT, in_reply_to_screen_name TEXT, full_text TEXT, json TEXT, api_version TEXT, hidden INTEGER)")
+		// Potential edited tweets will inflate the count, so we add a arbitrary number to compensate.
+		// This is a rough check anyway. The import process failing halfway, with thousands of tweets missing, is more likely than one or tweets missing.
+		//TODO : cleaner solution
+		return (archiveTweetCount >= dbTweetCount + 100)
+	}
+
+	try {
+		await JSONify("data", "tweets")
+
+		if (!(await tableExists('tweets'))) {
+			await createTable()
+		} else {
+			info("table alreay exist")
+
+		}
+		if (await areTweetsMissing()) {
 			const tweets = chain(
-				[fs.createReadStream(destinationFile),
+				[fs.createReadStream('./data/tweets.json'),
 				parser(),
 				streamArray(),
 				async function (item) {
@@ -69,16 +79,15 @@ export async function importFromArchive() {
 						await saveToDatabaseApiV1(tweet)
 						//console.log({ existingRecordsFound, missingTweets })
 					}
-
 				}]
 			)
-			return tweets.on('finish', () => console.log(tweetCount))
-		} else {
-			info("table alreay exist")
-
-			return (new Writable()).end()
+			return tweets
 		}
+		else {
+			info('no tweets missing')
+			return (new Writable()).end()
 
+		}
 
 	} catch (e) {
 		console.log("ERROR", e)

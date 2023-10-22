@@ -15,7 +15,11 @@ db.serialize = util.promisify(db.serialize)
 //@ts-ignore
 db.run = util.promisify(db.run)
 //@ts-ignore
-//db.each = util.promisify(db.each)
+db.each = util.promisify(db.each)
+
+export async function createTable() {
+  return await db.run("CREATE TABLE IF NOT EXISTS tweets (id_str TEXT PRIMARY KEY ASC, created_at TEXT, in_reply_to_status_id_str TEXT, in_reply_to_screen_name TEXT, full_text TEXT, json TEXT, api_version TEXT, hidden INTEGER)")
+}
 
 export async function tableExists(test) {
   const tables = await db.all("select name from sqlite_master where type='table'") as unknown as Array<Record<string, any>>
@@ -104,7 +108,7 @@ export function saveToDatabase(tweet, users, mediaObjects) {
   stmt.finalize()
 }
 
-export function tweetCount(): Promise<Error | number> {
+/*export function tweetCount(): Promise<Error | number> {
   return new Promise(function (resolve, reject) {
     db.each("SELECT COUNT(*) AS count FROM tweets",
       function () { }), // useless callback with all row info
@@ -117,5 +121,17 @@ export function tweetCount(): Promise<Error | number> {
       }
   })
 
+}
+*/
+
+export async function tweetCount() {
+  //@ts-ignore
+  const { err, count } = await db.each("SELECT COUNT(*) AS count FROM tweets")
+  if (err) {
+    console.log(err)
+  }
+  if (count) {
+    return count
+  }
 }
 
