@@ -1,12 +1,11 @@
 import DataSource from "./DataSource"
 import eleventyImg from "@11ty/eleventy-img"
 import eleventyFetch from "@11ty/eleventy-fetch"
-import merge from 'deepmerge'
-import fs from "fs"
 import fsp from "fs/promises"
 import { Tweet } from './types'
 import { params } from './cli'
-import { ELEVENTY_IMG_OPTIONS } from './utils'
+import { ELEVENTY_IMG_OPTIONS, exists } from './utils'
+import { join } from 'path'
 
 
 const dataSource = new DataSource()
@@ -17,9 +16,9 @@ export default class Twitter {
 	async getImage(remoteImageUrl: string, alt: string, id: string) {
 		try {
 			const imageName = remoteImageUrl.match(/media\/(.*\.(png|jpg|jpeg))$/)[1]
-			const localPath = ELEVENTY_IMG_OPTIONS.outputDir + id + '-' + imageName
+			const localPath = join(process.cwd(), ELEVENTY_IMG_OPTIONS.outputDir, id + '-' + imageName)
 
-			if (fs.existsSync(localPath)) {
+			if (await exists(localPath)) {
 				return { path: localPath, alt }
 			}
 			else {
@@ -38,16 +37,16 @@ export default class Twitter {
 	async getVideo(remoteVideoUrl, localVideoPath, id) {
 
 		try {
-			const imageName = remoteVideoUrl.match(/\/vid\/.*\/(.*\.mp4).*$/)[1]
-			const fallbackPath = ELEVENTY_IMG_OPTIONS.outputDir + id + '-' + imageName
+			const videoName = remoteVideoUrl.match(/\/vid\/.*\/(.*\.mp4).*$/)[1]
+			const localPath = join(process.cwd(), ELEVENTY_IMG_OPTIONS.outputDir, id + '-' + videoName)
 
-			if (fs.existsSync(fallbackPath)) {
-				return fallbackPath
+			if (await exists(localPath)) {
+				return localPath
 			}
 			else {
 				let videoBuffer = await eleventyFetch(remoteVideoUrl)
 
-				if (!fs.existsSync(localVideoPath)) {
+				if (!(await exists(localVideoPath))) {
 					await fsp.writeFile(localVideoPath, videoBuffer)
 				}
 			}
@@ -127,7 +126,7 @@ export default class Twitter {
 			text = text.replace(regex || key, newString)
 		}
 
-		tweet['local_media'] = local_media
+		tweet.local_media = local_media
 		tweet.full_text = text
 
 		return tweet
@@ -140,19 +139,15 @@ export default class Twitter {
 		const userNameMatcher = new RegExp("https\:\/\/twitter\.com\/" + userName + "/status/")
 
 		const urlOfQT = tweet.entities.urls.find(url => url.expanded_url.match(userNameMatcher))
-		// array d'arrays
+		// array of arrays
 
 		if (urlOfQT) {
 			const idMatcher = new RegExp(userName + "\/status\/([0-9]*)")
 			const quoted_tweet_ID = urlOfQT.expanded_url.match(idMatcher)[1]
 			const QT = await dataSource.getTweetById(quoted_tweet_ID)
-			if (!tweet.extended_entities) {
-				tweet.extended_entities = { "media": [] }
-			}
-			if (QT?.extended_entities?.media) {
-				tweet.extended_entities.media.push(...QT.extended_entities.media)
-			}
 			const fullQT = await this.getFullTweet(QT)
+
+			tweet.local_media.push(...fullQT.local_media)
 			tweet.full_text = tweet.full_text + "\nQT ⬇️\n" + QT.full_text
 			tweet.full_text = (tweet.full_text.length > 500 ? tweet.full_text.slice(0, 498) + "…" : tweet.full_text)
 			return tweet

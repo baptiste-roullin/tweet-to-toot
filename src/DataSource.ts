@@ -81,7 +81,8 @@ export default class DataSource {
 				in_reply_to_user_id_str: json.in_reply_to_user_id,
 				in_reply_to_screen_name: tweet.in_reply_to_screen_name, // use the db row instead of the json,
 				entities: json.entities || {},
-				extended_entities: {}
+				extended_entities: {},
+				local_media: []
 			}
 			if (json.entities && json.entities.urls) {
 				obj.entities.urls = json.entities.urls

@@ -13,6 +13,7 @@ export interface Tweet {
 	in_reply_to_user_id: string
 	in_reply_to_user_id_str: string
 	in_reply_to_screen_name: string // use the db row instead of the json
+	local_media: any[]
 	entities: Record<string, any>
 	extended_entities: Record<string, any>
 	lang: string
