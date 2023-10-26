@@ -1,6 +1,6 @@
 {
   "name": "tweet-to-toot",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "private": false,
   "type": "commonjs",
   "description": "Export your Twitter archived threads to Mastodon",
