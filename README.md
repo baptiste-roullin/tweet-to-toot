@@ -20,13 +20,13 @@ it works with pictures and videos. It even flattens branching threads (meaning: 
 
 ## Usage
 
-`totoot --ids 0000000000 [optional parameters]`
+`npx totoot --ids 0000000000 [optional parameters]`
 
 Full examples:
 
-- `totoot --ids 1157670494390378498 --intro "imported thread, started in 2019 on the Other Site" --dry-run`
+- `npx totoot --ids 1157670494390378498 --intro "imported thread, started in 2019 on the Other Site" --dry-run`
 
-- `totoot --ids 1157670494390378498 791709895083102209 --wait 10 --lang en`
+- `npx totoot --ids 1157670494390378498 791709895083102209 --wait 10 --lang en`
 
 
 ## Parameters

@@ -44,7 +44,7 @@ export async function importFromArchive() {
 			const manifest = require(join(process.cwd(), "./data/manifest.json"))
 			var archiveTweetCount = manifest.dataTypes.tweets.files[0].count
 		}
-		const dbTweetCount = await tweetCount() as number
+		const dbTweetCount = (await tweetCount()) as number || 0
 
 		// Potential edited tweets will inflate the count, so we add a arbitrary number to compensate.
 		// This is a rough check anyway. The import process failing halfway, with thousands of tweets missing, is more likely than one or tweets missing.
