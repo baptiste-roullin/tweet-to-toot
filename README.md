@@ -3,7 +3,7 @@
 
 You want to break free of the site formerly known as Twitter but do not want to lose your numerous, ongoing, carefully maintained, years-long threads?
 
-Tweet-to-Toot is for your: [grab an archive](https://twitter.com/settings/download_your_data) of your Twitter account, republish the threads your want on Mastodon and start anew.
+Tweet-to-Toot is for you. [grab an archive](https://twitter.com/settings/download_your_data) of your Twitter account, republish the threads your want on Mastodon and start anew.
 
 Under the hood is a heavy fork of [Tweetback](https://github.com/tweetback/tweetback) and [a client](https://github.com/neet/masto.js/) for the Mastodon API.
 
