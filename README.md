@@ -16,7 +16,7 @@ it works with pictures and videos. It even flattens branching threads (meaning: 
 - In your terminal, go to the folder of your archive.
 - Run `npm install tweet-to-toot`.
 - Grab a Mastodon API token by following [these instructions](https://neet.github.io/masto.js/#md:quick-start).
-- Add the token and the URL of you instance as environnment variables. The simplest way is to put them in a file named `.env` (no extension) at the root of your project. See `.env.sample.`
+- Add the token and the URL of you instance as environnment variables. The simplest way is to put them in a file named `.env` (no extension) at the root of your project. See `.env.sample`.
 
 ## Usage
 
